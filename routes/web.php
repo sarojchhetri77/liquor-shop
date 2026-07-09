@@ -69,6 +69,7 @@ Route::middleware(['auth', 'verified', 'role:admin,staff'])
         Route::get('products/create', [AdminProductController::class, 'create'])->name('products.create');
         Route::post('products', [AdminProductController::class, 'store'])->name('products.store');
         Route::get('products/{product}/edit', [AdminProductController::class, 'edit'])->name('products.edit');
+        Route::get('products/{product}', [AdminProductController::class, 'show'])->name('products.show');
         // Product update uses POST + _method=PUT so multipart image uploads work reliably.
         Route::post('products/{product}', [AdminProductController::class, 'update'])->name('products.update');
         Route::delete('products/{product}', [AdminProductController::class, 'destroy'])->name('products.destroy');

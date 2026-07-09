@@ -18,6 +18,15 @@ test('customers cannot access the admin panel', function () {
     $this->actingAs($customer)->get(route('admin.products.index'))->assertForbidden();
 });
 
+test('staff can view a product detail page', function () {
+    $staff = User::factory()->staff()->create();
+    $product = Product::factory()->create();
+
+    $this->actingAs($staff)->get(route('admin.products.show', $product))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page->component('admin/products/Show'));
+});
+
 test('staff can create a product with multiple images', function () {
     Storage::fake('public');
     $staff = User::factory()->staff()->create();

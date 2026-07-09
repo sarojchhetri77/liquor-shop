@@ -39,6 +39,13 @@ class ProductController extends Controller
         ]);
     }
 
+    public function show(Product $product): Response
+    {
+        return Inertia::render('admin/products/Show', [
+            'product' => $product->load(['images', 'category', 'reviews.user']),
+        ]);
+    }
+
     public function store(ProductRequest $request): RedirectResponse
     {
         $this->products->create($request->validated());

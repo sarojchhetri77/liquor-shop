@@ -9,11 +9,20 @@ import {
     ShoppingBag,
     Store,
     Tags,
+    User as UserIcon,
     Users,
     Wine,
 } from '@lucide/vue';
 import type { LucideIcon } from '@lucide/vue';
 import { computed, ref } from 'vue';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Toaster } from '@/components/ui/sonner';
 import { cn } from '@/lib/utils';
@@ -66,55 +75,51 @@ function logout(): void {
     <div class="min-h-screen bg-muted/40 text-foreground">
         <!-- Desktop sidebar -->
         <aside
-            class="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col bg-gradient-to-b from-rose-950 via-primary to-rose-950 text-primary-foreground md:flex"
+            class="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r bg-card md:flex"
         >
-            <div class="flex h-[68px] items-center gap-2.5 border-b border-white/10 px-6">
-                <span class="flex size-10 items-center justify-center rounded-full border border-gold/40 bg-white/5">
+            <div class="flex h-[68px] items-center gap-2.5 border-b px-6">
+                <span class="flex size-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
                     <Wine class="size-5 text-gold" :stroke-width="1.5" />
                 </span>
                 <div class="leading-none">
-                    <p class="font-display text-xl font-semibold">Nectar</p>
-                    <p class="mt-0.5 text-[10px] font-semibold tracking-[0.3em] text-gold/80 uppercase">Admin</p>
+                    <p class="font-display text-xl font-semibold text-foreground">Nectar</p>
+                    <p class="mt-0.5 text-[10px] font-semibold tracking-[0.3em] text-primary/70 uppercase">Admin</p>
                 </div>
             </div>
 
             <nav class="flex-1 space-y-1 overflow-y-auto p-4">
-                <p class="px-3 pb-2 text-[10px] font-semibold tracking-[0.22em] text-white/40 uppercase">Management</p>
+                <p class="px-3 pb-2 text-[10px] font-semibold tracking-[0.22em] text-muted-foreground/70 uppercase">Management</p>
                 <Link
                     v-for="item in visibleItems"
                     :key="item.href"
                     :href="item.href"
                     :class="
                         cn(
-                            'relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                            'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
                             isActive(item.href)
-                                ? 'bg-white/10 text-white'
-                                : 'text-white/60 hover:bg-white/5 hover:text-white',
+                                ? 'bg-primary text-primary-foreground shadow-sm'
+                                : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                         )
                     "
                 >
-                    <span
-                        v-if="isActive(item.href)"
-                        class="absolute top-1/2 left-0 h-5 w-1 -translate-y-1/2 rounded-r-full bg-gold"
-                    ></span>
                     <component
                         :is="item.icon"
                         class="size-5"
-                        :class="isActive(item.href) ? 'text-gold' : 'text-white/50'"
+                        :class="isActive(item.href) ? 'text-gold' : 'text-muted-foreground'"
                     />
                     {{ item.label }}
                 </Link>
             </nav>
 
-            <div class="space-y-1 border-t border-white/10 p-4">
+            <div class="space-y-1 border-t p-4">
                 <Link
                     href="/"
-                    class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-white/60 transition-colors hover:bg-white/5 hover:text-white"
+                    class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >
                     <Store class="size-5" /> View store
                 </Link>
                 <button
-                    class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gold/90 transition-colors hover:bg-white/5"
+                    class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-red-600 transition-colors hover:bg-red-500/10"
                     @click="logout"
                 >
                     <LogOut class="size-5" /> Log out
@@ -133,17 +138,14 @@ function logout(): void {
                     >
                         <Menu class="size-5" />
                     </SheetTrigger>
-                    <SheetContent
-                        side="left"
-                        class="w-72 border-none bg-gradient-to-b from-rose-950 via-primary to-rose-950 p-0 text-primary-foreground"
-                    >
-                        <div class="flex h-[68px] items-center gap-2.5 border-b border-white/10 px-6">
-                            <span class="flex size-9 items-center justify-center rounded-full border border-gold/40 bg-white/5">
+                    <SheetContent side="left" class="w-72 bg-card p-0">
+                        <div class="flex h-[68px] items-center gap-2.5 border-b px-6">
+                            <span class="flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground">
                                 <Wine class="size-4.5 text-gold" :stroke-width="1.5" />
                             </span>
                             <div class="leading-none">
-                                <p class="font-display text-lg font-semibold">Nectar</p>
-                                <p class="mt-0.5 text-[10px] font-semibold tracking-[0.3em] text-gold/80 uppercase">Admin</p>
+                                <p class="font-display text-lg font-semibold text-foreground">Nectar</p>
+                                <p class="mt-0.5 text-[10px] font-semibold tracking-[0.3em] text-primary/70 uppercase">Admin</p>
                             </div>
                         </div>
                         <nav class="space-y-1 p-4">
@@ -154,15 +156,15 @@ function logout(): void {
                                 class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors"
                                 :class="
                                     isActive(item.href)
-                                        ? 'bg-white/10 text-white'
-                                        : 'text-white/60 hover:bg-white/5'
+                                        ? 'bg-primary text-primary-foreground'
+                                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                                 "
                                 @click="mobileOpen = false"
                             >
                                 <component
                                     :is="item.icon"
                                     class="size-5"
-                                    :class="isActive(item.href) ? 'text-gold' : 'text-white/50'"
+                                    :class="isActive(item.href) ? 'text-gold' : 'text-muted-foreground'"
                                 />
                                 {{ item.label }}
                             </Link>
@@ -172,17 +174,44 @@ function logout(): void {
 
                 <h1 class="font-display text-xl font-semibold">{{ title }}</h1>
 
-                <div class="ml-auto flex items-center gap-3">
-                    <div class="hidden text-right sm:block">
-                        <p class="text-sm font-medium">{{ auth.user?.name }}</p>
-                        <p class="text-xs text-muted-foreground capitalize">{{ auth.user?.role }}</p>
-                    </div>
-                    <span
-                        class="flex size-10 items-center justify-center rounded-full bg-primary font-display text-sm font-semibold text-primary-foreground"
+                <DropdownMenu>
+                    <DropdownMenuTrigger
+                        class="ml-auto flex items-center gap-3 rounded-full py-1 pr-1 pl-3 transition-colors outline-none hover:bg-muted"
                     >
-                        {{ auth.user?.name?.charAt(0) }}
-                    </span>
-                </div>
+                        <div class="hidden text-right sm:block">
+                            <p class="text-sm font-medium">{{ auth.user?.name }}</p>
+                            <p class="text-xs text-muted-foreground capitalize">{{ auth.user?.role }}</p>
+                        </div>
+                        <span
+                            class="flex size-10 items-center justify-center rounded-full bg-primary font-display text-sm font-semibold text-primary-foreground"
+                        >
+                            {{ auth.user?.name?.charAt(0) }}
+                        </span>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" class="w-56">
+                        <DropdownMenuLabel>
+                            <div class="flex flex-col">
+                                <span class="truncate font-medium">{{ auth.user?.name }}</span>
+                                <span class="truncate text-xs font-normal text-muted-foreground">{{ auth.user?.email }}</span>
+                            </div>
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem as-child>
+                            <Link href="/settings/profile" class="flex w-full items-center gap-2">
+                                <UserIcon class="size-4" /> Account settings
+                            </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem as-child>
+                            <Link href="/" class="flex w-full items-center gap-2">
+                                <Store class="size-4" /> View store
+                            </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem class="gap-2 text-red-600 focus:text-red-600" @click="logout">
+                            <LogOut class="size-4" /> Log out
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </header>
 
             <main class="mx-auto w-full max-w-7xl p-4 sm:p-6 lg:p-8">

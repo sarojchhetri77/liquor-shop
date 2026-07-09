@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { ArrowRight, Banknote, Receipt, ShoppingBag, Users } from '@lucide/vue';
 import { computed } from 'vue';
 import AdminLayout from '@/layouts/AdminLayout.vue';
@@ -27,11 +27,22 @@ const props = defineProps<{
         revenue: number;
         avgOrderValue: number;
     };
+    range: string;
+    ranges: { value: string; label: string }[];
+    chartLabel: string;
     revenueSeries: SeriesPoint[];
     statusBreakdown: StatusRow[];
     topCategories: CategoryRow[];
     recentOrders: RecentOrder[];
 }>();
+
+function setRange(value: string): void {
+    router.get(
+        '/admin',
+        { range: value },
+        { preserveState: true, preserveScroll: true, replace: true },
+    );
+}
 
 const cards = computed(() => [
     { label: 'Total revenue', value: formatMoney(props.stats.revenue), icon: Banknote, tone: 'bg-emerald-500/10 text-emerald-600' },
@@ -91,6 +102,23 @@ const statusTone: Record<string, string> = {
 <template>
     <Head title="Admin Dashboard" />
     <AdminLayout title="Dashboard">
+        <!-- Date range filter -->
+        <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <p class="text-sm text-muted-foreground">
+                Showing <span class="font-medium text-foreground">{{ chartLabel.toLowerCase() }}</span>
+            </p>
+            <div class="flex flex-wrap gap-1 rounded-full border bg-card p-1">
+                <button
+                    v-for="r in ranges"
+                    :key="r.value"
+                    :class="cn('rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors', range === r.value ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground')"
+                    @click="setRange(r.value)"
+                >
+                    {{ r.label }}
+                </button>
+            </div>
+        </div>
+
         <!-- KPI cards -->
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <div
@@ -115,7 +143,7 @@ const statusTone: Record<string, string> = {
                 <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
                     <div>
                         <h2 class="font-display text-lg font-semibold">Revenue</h2>
-                        <p class="text-xs text-muted-foreground">Last 14 days</p>
+                        <p class="text-xs text-muted-foreground">{{ chartLabel }}</p>
                     </div>
                     <div class="flex gap-6 text-right">
                         <div>
