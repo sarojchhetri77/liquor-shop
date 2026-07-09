@@ -1,0 +1,343 @@
+<script setup lang="ts">
+import { Link, router, usePage } from '@inertiajs/vue3';
+import {
+    Clock,
+    LogOut,
+    Mail,
+    MapPin,
+    Package,
+    Phone,
+    Search,
+    ShoppingBag,
+    ShoppingCart,
+    Truck,
+    User as UserIcon,
+    Wine,
+} from '@lucide/vue';
+import { computed, ref } from 'vue';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Toaster } from '@/components/ui/sonner';
+
+const page = usePage();
+
+const auth = computed(() => page.props.auth);
+const cartCount = computed(() => page.props.cartCount ?? 0);
+const isAuthenticated = computed(() => !!auth.value.user);
+const categories = computed(() => page.props.navCategories ?? []);
+const year = new Date().getFullYear();
+
+const search = ref(
+    new URLSearchParams(
+        typeof window !== 'undefined' ? window.location.search : '',
+    ).get('search') ?? '',
+);
+
+function submitSearch(): void {
+    router.get(
+        '/products',
+        { search: search.value || undefined },
+        { preserveState: true },
+    );
+}
+
+function logout(): void {
+    router.post('/logout');
+}
+
+const navLinks = [
+    { label: 'Home', href: '/' },
+    { label: 'Shop', href: '/products' },
+];
+
+const socials = [
+    { label: 'Facebook', short: 'Fb', href: '#' },
+    { label: 'Instagram', short: 'Ig', href: '#' },
+    { label: 'X', short: 'X', href: '#' },
+];
+</script>
+
+<template>
+    <div class="flex min-h-screen flex-col bg-background text-foreground">
+        <!-- Announcement bar -->
+        <div class="bg-primary text-primary-foreground">
+            <div
+                class="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-center gap-x-6 gap-y-1 px-4 py-2 text-[11px] uppercase tracking-[0.16em] sm:justify-between sm:px-6"
+            >
+                <div class="flex flex-wrap items-center gap-x-6 gap-y-1">
+                    <span class="flex items-center gap-1.5">
+                        <Phone class="size-3.5 text-gold" /> Order by phone
+                        <a href="tel:+97714416789" class="font-semibold hover:underline">01-4416789</a>
+                    </span>
+                    <span class="hidden items-center gap-1.5 sm:flex">
+                        <Clock class="size-3.5 text-gold" /> 11:00 – 21:30 (NST)
+                    </span>
+                </div>
+                <span class="flex items-center gap-1.5">
+                    <Truck class="size-3.5 text-gold" /> Cash or card on delivery
+                </span>
+            </div>
+        </div>
+
+        <header
+            class="sticky top-0 z-40 border-b bg-background/85 backdrop-blur"
+        >
+            <div
+                class="mx-auto flex h-[68px] w-full max-w-7xl items-center gap-5 px-4 sm:px-6"
+            >
+                <Link href="/" class="flex items-center gap-2.5">
+                    <span
+                        class="flex size-10 items-center justify-center rounded-full border border-gold/40 bg-primary text-primary-foreground"
+                    >
+                        <Wine class="size-5 text-gold" :stroke-width="1.5" />
+                    </span>
+                    <span class="hidden flex-col leading-none sm:flex">
+                        <span class="font-display text-2xl font-semibold tracking-tight">
+                            Nectar<span class="text-gold">.</span>
+                        </span>
+                        <span class="text-[9px] font-medium uppercase tracking-[0.3em] text-muted-foreground">
+                            Fine Wine &amp; Spirits
+                        </span>
+                    </span>
+                </Link>
+
+                <nav class="hidden items-center gap-6 md:flex">
+                    <Link
+                        v-for="link in navLinks"
+                        :key="link.href"
+                        :href="link.href"
+                        class="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-primary"
+                    >
+                        {{ link.label }}
+                    </Link>
+                </nav>
+
+                <form
+                    class="relative ml-auto hidden max-w-xs flex-1 sm:block"
+                    @submit.prevent="submitSearch"
+                >
+                    <Search
+                        class="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+                    />
+                    <input
+                        v-model="search"
+                        type="search"
+                        placeholder="Search the cellar…"
+                        class="h-10 w-full rounded-full border bg-card pr-4 pl-9 text-sm transition-colors outline-none focus:border-primary"
+                    />
+                </form>
+
+                <div class="ml-auto flex items-center gap-1 sm:ml-0">
+                    <Link
+                        href="/cart"
+                        class="relative flex size-10 items-center justify-center rounded-full text-foreground transition-colors hover:bg-muted"
+                        aria-label="Cart"
+                    >
+                        <ShoppingCart class="size-5" />
+                        <span
+                            v-if="cartCount > 0"
+                            class="absolute -top-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-primary-foreground"
+                        >
+                            {{ cartCount }}
+                        </span>
+                    </Link>
+
+                    <template v-if="isAuthenticated">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger
+                                class="flex size-10 items-center justify-center rounded-full text-foreground transition-colors hover:bg-muted"
+                            >
+                                <UserIcon class="size-5" />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" class="w-52">
+                                <DropdownMenuLabel>
+                                    <div class="flex flex-col">
+                                        <span class="truncate font-medium">{{
+                                            auth.user?.name
+                                        }}</span>
+                                        <span
+                                            class="truncate text-xs text-muted-foreground"
+                                            >{{ auth.user?.email }}</span
+                                        >
+                                    </div>
+                                </DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem as-child>
+                                    <Link
+                                        href="/orders"
+                                        class="flex w-full items-center gap-2"
+                                    >
+                                        <Package class="size-4" /> My Orders
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem as-child>
+                                    <Link
+                                        href="/settings/profile"
+                                        class="flex w-full items-center gap-2"
+                                    >
+                                        <UserIcon class="size-4" /> Account
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    v-if="auth.canAccessAdminPanel"
+                                    as-child
+                                >
+                                    <Link
+                                        href="/admin"
+                                        class="flex w-full items-center gap-2"
+                                    >
+                                        <ShoppingBag class="size-4" /> Admin
+                                        Panel
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                    class="gap-2 text-red-600 focus:text-red-600"
+                                    @click="logout"
+                                >
+                                    <LogOut class="size-4" /> Log out
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </template>
+                    <template v-else>
+                        <Link
+                            href="/login"
+                            class="rounded-md px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                        >
+                            Log in
+                        </Link>
+                        <Link
+                            href="/register"
+                            class="hidden rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:inline-block"
+                        >
+                            Sign up
+                        </Link>
+                    </template>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1">
+            <slot />
+        </main>
+
+        <footer class="mt-10 border-t bg-muted/40">
+            <div class="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6">
+                <div class="grid gap-10 lg:grid-cols-4 lg:gap-8">
+                    <!-- Brand + contact -->
+                    <div class="space-y-4 lg:col-span-1">
+                        <Link href="/" class="flex items-center gap-2.5">
+                            <span
+                                class="flex size-10 items-center justify-center rounded-full border border-gold/40 bg-primary text-primary-foreground"
+                            >
+                                <Wine class="size-5 text-gold" :stroke-width="1.5" />
+                            </span>
+                            <span class="font-display text-2xl font-semibold">
+                                Nectar<span class="text-gold">.</span>
+                            </span>
+                        </Link>
+                        <p class="text-sm text-muted-foreground">
+                            Nepal's cellar for hand-picked wines, premium spirits
+                            and ice-cold beer — delivered to your door.
+                        </p>
+                        <ul class="space-y-2 text-sm text-muted-foreground">
+                            <li class="flex items-center gap-2">
+                                <Phone class="size-4 text-primary" />
+                                <a href="tel:+97714416789" class="hover:text-foreground">01-4416789</a>
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <Mail class="size-4 text-primary" />
+                                <a href="mailto:hello@nectar.test" class="hover:text-foreground">hello@nectar.test</a>
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <Clock class="size-4 text-primary" />
+                                11:00 AM – 09:30 PM (NST)
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <MapPin class="size-4 text-primary" />
+                                Kathmandu, Nepal
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Shop categories -->
+                    <div>
+                        <h3 class="mb-4 text-sm font-semibold tracking-wide uppercase">Shop</h3>
+                        <ul class="space-y-2 text-sm text-muted-foreground">
+                            <li v-for="category in categories" :key="category.id">
+                                <Link
+                                    :href="`/products?category_id=${category.id}`"
+                                    class="transition-colors hover:text-foreground"
+                                >
+                                    {{ category.name }}
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/products" class="font-medium text-primary hover:underline">
+                                    View all
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Account / help -->
+                    <div>
+                        <h3 class="mb-4 text-sm font-semibold tracking-wide uppercase">My account</h3>
+                        <ul class="space-y-2 text-sm text-muted-foreground">
+                            <li><Link href="/orders" class="hover:text-foreground">My orders</Link></li>
+                            <li><Link href="/cart" class="hover:text-foreground">My cart</Link></li>
+                            <li v-if="!isAuthenticated"><Link href="/login" class="hover:text-foreground">Sign in</Link></li>
+                            <li v-if="!isAuthenticated"><Link href="/register" class="hover:text-foreground">Create account</Link></li>
+                            <li><Link href="/settings/profile" v-if="isAuthenticated" class="hover:text-foreground">Profile</Link></li>
+                            <li><a href="tel:+97714416789" class="hover:text-foreground">Help &amp; support</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Delivery + social -->
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-semibold tracking-wide uppercase">Delivery &amp; payment</h3>
+                        <ul class="space-y-2 text-sm text-muted-foreground">
+                            <li class="flex items-center gap-2">
+                                <Truck class="size-4 text-primary" /> Cash or card on delivery
+                            </li>
+                            <li>Free delivery over Rs. 5,000</li>
+                            <li>Same-day dispatch before 8 PM</li>
+                        </ul>
+                        <div>
+                            <p class="mb-2 text-sm font-medium">Follow us</p>
+                            <div class="flex gap-2">
+                                <a
+                                    v-for="social in socials"
+                                    :key="social.label"
+                                    :href="social.href"
+                                    :aria-label="social.label"
+                                    class="flex size-9 items-center justify-center rounded-full border text-xs font-semibold text-muted-foreground transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground"
+                                >
+                                    {{ social.short }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="mt-10 flex flex-col items-center justify-between gap-3 border-t pt-6 text-xs text-muted-foreground sm:flex-row"
+                >
+                    <p>&copy; {{ year }} Nectar Online Store. All rights reserved.</p>
+                    <p class="font-semibold tracking-wide text-primary uppercase">
+                        You must be 21+ to purchase · Please drink responsibly
+                    </p>
+                </div>
+            </div>
+        </footer>
+
+        <Toaster position="top-center" />
+    </div>
+</template>
