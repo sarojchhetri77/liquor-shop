@@ -22,7 +22,8 @@ A full-featured online liquor store (wines, spirits & beer) built with **Laravel
 
 ## Requirements
 
-- **PHP** 8.3 or higher (with `pdo_sqlite`, `mbstring`, `openssl`, `fileinfo` extensions)
+- **PHP** 8.3 or higher (with `pdo_mysql`, `mbstring`, `openssl`, `fileinfo` extensions)
+- **MySQL** 8.0 or higher (or MariaDB 10.6+)
 - **Composer** 2.x
 - **Node.js** 20+ and **npm**
 - *(optional)* [Laravel Herd](https://herd.laravel.com/) — serves the app automatically at `http://nectar.test` / `http://ecommerce.test`
@@ -49,17 +50,21 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-The project uses **SQLite** by default. Create the database file:
+The project uses **MySQL**. Create the database, then point the `DB_*` values in
+`.env` at it:
 
 ```bash
-# macOS / Linux
-touch database/database.sqlite
-
-# Windows (PowerShell)
-New-Item database/database.sqlite -ItemType File
+mysql -u root -p -e "CREATE DATABASE \`liquor-shop\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 ```
 
-> To use MySQL/PostgreSQL instead, update the `DB_*` values in `.env`.
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=liquor-shop
+DB_USERNAME=root
+DB_PASSWORD=your-password
+```
 
 ### 3. Migrate & seed
 
