@@ -6,6 +6,7 @@ use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,6 +22,8 @@ use Illuminate\Support\Carbon;
  * @property string|null $brand
  * @property string $price
  * @property int $discount_percent
+ * @property Carbon|null $discount_starts_at
+ * @property Carbon|null $discount_ends_at
  * @property string $rating
  * @property int $reviews_count
  * @property int $stock
@@ -28,10 +31,12 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Category $category
- * @property-read \Illuminate\Database\Eloquent\Collection<int, ProductImage> $images
+ * @property-read Collection<int, ProductImage> $images
+ * @property-read bool $is_discount_active
+ * @property-read int $effective_discount_percent
  * @property-read float $final_price
  */
-#[Fillable(['category_id', 'name', 'slug', 'description', 'brand', 'price', 'discount_percent', 'stock', 'is_active'])]
+#[Fillable(['category_id', 'name', 'slug', 'description', 'brand', 'price', 'discount_percent', 'discount_starts_at', 'discount_ends_at', 'stock', 'is_active'])]
 class Product extends Model
 {
     /** @use HasFactory<ProductFactory> */
@@ -40,7 +45,7 @@ class Product extends Model
     /**
      * @var list<string>
      */
-    protected $appends = ['final_price'];
+    protected $appends = ['is_discount_active', 'effective_discount_percent', 'final_price'];
 
     /**
      * @return array<string, string>
@@ -51,18 +56,61 @@ class Product extends Model
             'price' => 'decimal:2',
             'rating' => 'decimal:2',
             'is_active' => 'boolean',
+            'discount_starts_at' => 'datetime',
+            'discount_ends_at' => 'datetime',
         ];
     }
 
     /**
-     * The price after applying the discount percentage.
+     * Whether the product's discount is currently in effect. A discount is
+     * active when a percentage is set and the current time falls within the
+     * optional start/end window (a null bound means that side is open-ended).
+     *
+     * @return Attribute<bool, never>
+     */
+    protected function isDiscountActive(): Attribute
+    {
+        return Attribute::get(function (): bool {
+            if ($this->discount_percent <= 0) {
+                return false;
+            }
+
+            $now = Carbon::now();
+
+            if ($this->discount_starts_at !== null && $now->lt($this->discount_starts_at)) {
+                return false;
+            }
+
+            if ($this->discount_ends_at !== null && $now->gt($this->discount_ends_at)) {
+                return false;
+            }
+
+            return true;
+        });
+    }
+
+    /**
+     * The discount percentage actually applied right now: the configured
+     * percentage while the discount is active, otherwise zero.
+     *
+     * @return Attribute<int, never>
+     */
+    protected function effectiveDiscountPercent(): Attribute
+    {
+        return Attribute::get(
+            fn (): int => $this->is_discount_active ? (int) $this->discount_percent : 0,
+        );
+    }
+
+    /**
+     * The price after applying the currently effective discount.
      *
      * @return Attribute<float, never>
      */
     protected function finalPrice(): Attribute
     {
         return Attribute::get(
-            fn (): float => round((float) $this->price * (1 - $this->discount_percent / 100), 2),
+            fn (): float => round((float) $this->price * (1 - $this->effective_discount_percent / 100), 2),
         );
     }
 

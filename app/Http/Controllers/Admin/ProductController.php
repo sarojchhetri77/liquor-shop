@@ -86,6 +86,8 @@ class ProductController extends Controller
         $count = $this->products->applyBulkDiscount(
             $request->validated('product_ids'),
             (int) $request->validated('discount_percent'),
+            $request->validated('discount_starts_at'),
+            $request->validated('discount_ends_at'),
         );
         $this->toast("Discount applied to {$count} product(s).");
 

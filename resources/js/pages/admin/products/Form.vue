@@ -19,6 +19,15 @@ const isEdit = computed(() => !!props.product);
 const existingImages = ref(props.product?.images ?? []);
 const newPreviews = ref<string[]>([]);
 
+/** Convert an ISO timestamp to the `YYYY-MM-DDTHH:mm` a datetime-local input expects. */
+function toDateTimeLocal(value: string | null | undefined): string {
+    if (!value) {
+        return '';
+    }
+
+    return value.slice(0, 16);
+}
+
 const form = useForm({
     category_id: props.product?.category_id ?? props.categories[0]?.id ?? '',
     name: props.product?.name ?? '',
@@ -26,6 +35,8 @@ const form = useForm({
     description: props.product?.description ?? '',
     price: props.product?.price ?? '',
     discount_percent: props.product?.discount_percent ?? 0,
+    discount_starts_at: toDateTimeLocal(props.product?.discount_starts_at),
+    discount_ends_at: toDateTimeLocal(props.product?.discount_ends_at),
     stock: props.product?.stock ?? 0,
     is_active: props.product?.is_active ?? true,
     images: [] as File[],
@@ -190,11 +201,30 @@ function submit(): void {
                             <InputError :message="form.errors.discount_percent" />
                         </div>
 
+                        <div v-if="Number(form.discount_percent) > 0" class="grid gap-5 rounded-lg border border-dashed p-3.5 sm:grid-cols-2">
+                            <div class="grid gap-1.5 sm:col-span-2">
+                                <p class="text-xs text-muted-foreground">
+                                    Optionally schedule the discount. Leave the start empty to begin immediately, and the
+                                    end empty to run indefinitely. The discount turns off automatically once it expires.
+                                </p>
+                            </div>
+                            <div class="grid gap-1.5">
+                                <Label for="discount_starts_at">Starts</Label>
+                                <input id="discount_starts_at" v-model="form.discount_starts_at" type="datetime-local" :class="inputClass" />
+                                <InputError :message="form.errors.discount_starts_at" />
+                            </div>
+                            <div class="grid gap-1.5">
+                                <Label for="discount_ends_at">Expires</Label>
+                                <input id="discount_ends_at" v-model="form.discount_ends_at" type="datetime-local" :class="inputClass" />
+                                <InputError :message="form.errors.discount_ends_at" />
+                            </div>
+                        </div>
+
                         <div
                             v-if="Number(form.discount_percent) > 0 && Number(form.price) > 0"
                             class="flex items-center justify-between rounded-lg bg-accent/50 px-3.5 py-2.5 text-sm"
                         >
-                            <span class="text-muted-foreground">Customer pays</span>
+                            <span class="text-muted-foreground">Customer pays{{ form.discount_starts_at ? ' (when active)' : '' }}</span>
                             <span class="font-display text-base font-semibold text-primary">{{ formatMoney(finalPrice) }}</span>
                         </div>
 

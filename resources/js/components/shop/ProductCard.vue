@@ -13,7 +13,7 @@ const props = defineProps<{
 }>();
 
 const image = computed(() => props.product.images?.[0]?.url ?? null);
-const hasDiscount = computed(() => props.product.discount_percent > 0);
+const hasDiscount = computed(() => props.product.is_discount_active);
 const soldOut = computed(() => props.product.stock <= 0);
 
 function addToCart(): void {
@@ -51,7 +51,7 @@ function addToCart(): void {
                 v-if="hasDiscount"
                 class="absolute top-3 left-0 rounded-r-full bg-gold px-3 py-1 text-[11px] font-semibold tracking-wide text-white uppercase shadow-md"
             >
-                {{ product.discount_percent }}% off
+                {{ product.effective_discount_percent }}% off
             </span>
             <span
                 v-if="soldOut"

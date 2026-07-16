@@ -23,6 +23,8 @@ const filters = reactive({
 
 const selected = ref<number[]>([]);
 const discountValue = ref<number | null>(null);
+const discountStartsAt = ref<string>('');
+const discountEndsAt = ref<string>('');
 
 const controlClass =
     'h-11 rounded-lg border bg-card px-3.5 text-sm outline-none transition-colors focus:border-primary';
@@ -55,12 +57,19 @@ function applyDiscount(): void {
 
     router.post(
         '/admin/products/discount',
-        { product_ids: selected.value, discount_percent: discountValue.value },
+        {
+            product_ids: selected.value,
+            discount_percent: discountValue.value,
+            discount_starts_at: discountStartsAt.value || null,
+            discount_ends_at: discountEndsAt.value || null,
+        },
         {
             preserveScroll: true,
             onSuccess: () => {
                 selected.value = [];
                 discountValue.value = null;
+                discountStartsAt.value = '';
+                discountEndsAt.value = '';
             },
         },
     );
@@ -103,11 +112,14 @@ function destroy(product: Product): void {
         <!-- Bulk discount tool -->
         <div
             v-if="selected.length"
-            class="mt-4 flex flex-wrap items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4"
+            class="mt-4 flex flex-wrap items-end gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4"
         >
-            <Tag class="size-4 text-primary" />
-            <span class="text-sm font-medium">{{ selected.length }} selected</span>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 self-center">
+                <Tag class="size-4 text-primary" />
+                <span class="text-sm font-medium">{{ selected.length }} selected</span>
+            </div>
+            <label class="flex flex-col gap-1 text-xs text-muted-foreground">
+                Discount
                 <input
                     v-model.number="discountValue"
                     type="number"
@@ -116,6 +128,24 @@ function destroy(product: Product): void {
                     placeholder="%"
                     class="h-10 w-20 rounded-lg border bg-background px-2.5 text-sm outline-none focus:border-primary"
                 />
+            </label>
+            <label class="flex flex-col gap-1 text-xs text-muted-foreground">
+                Starts (optional)
+                <input
+                    v-model="discountStartsAt"
+                    type="datetime-local"
+                    class="h-10 rounded-lg border bg-background px-2.5 text-sm outline-none focus:border-primary"
+                />
+            </label>
+            <label class="flex flex-col gap-1 text-xs text-muted-foreground">
+                Expires (optional)
+                <input
+                    v-model="discountEndsAt"
+                    type="datetime-local"
+                    class="h-10 rounded-lg border bg-background px-2.5 text-sm outline-none focus:border-primary"
+                />
+            </label>
+            <div class="flex items-center gap-2 self-center">
                 <Button size="sm" :disabled="discountValue === null" @click="applyDiscount">Apply discount</Button>
                 <Button size="sm" variant="ghost" @click="selected = []">Clear</Button>
             </div>
@@ -175,7 +205,7 @@ function destroy(product: Product): void {
                             <td class="px-4 py-3.5">
                                 <div class="flex flex-col leading-tight">
                                     <span class="font-medium">{{ formatMoney(product.final_price) }}</span>
-                                    <span v-if="product.discount_percent > 0" class="text-xs text-muted-foreground line-through">
+                                    <span v-if="product.is_discount_active" class="text-xs text-muted-foreground line-through">
                                         {{ formatMoney(product.price) }}
                                     </span>
                                 </div>

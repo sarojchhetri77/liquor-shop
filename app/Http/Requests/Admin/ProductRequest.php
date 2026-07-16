@@ -23,6 +23,8 @@ class ProductRequest extends FormRequest
             'brand' => ['nullable', 'string', 'max:255'],
             'price' => ['required', 'numeric', 'min:0', 'max:9999999'],
             'discount_percent' => ['nullable', 'integer', 'min:0', 'max:100'],
+            'discount_starts_at' => ['nullable', 'date'],
+            'discount_ends_at' => ['nullable', 'date', ...($this->filled('discount_starts_at') ? ['after_or_equal:discount_starts_at'] : [])],
             'stock' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['boolean'],
             'images' => ['nullable', 'array', 'max:8'],
@@ -36,6 +38,8 @@ class ProductRequest extends FormRequest
     {
         $this->merge([
             'is_active' => $this->boolean('is_active'),
+            'discount_starts_at' => $this->input('discount_starts_at') ?: null,
+            'discount_ends_at' => $this->input('discount_ends_at') ?: null,
         ]);
     }
 }

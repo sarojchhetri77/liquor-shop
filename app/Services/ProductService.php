@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -53,9 +54,9 @@ class ProductService
      * Build a query filtered by product name and category.
      *
      * @param  array{search?: string|null, category_id?: int|string|null}  $filters
-     * @return \Illuminate\Database\Eloquent\Builder<Product>
+     * @return Builder<Product>
      */
-    private function filteredQuery(array $filters): \Illuminate\Database\Eloquent\Builder
+    private function filteredQuery(array $filters): Builder
     {
         return Product::query()
             ->when(
@@ -69,7 +70,7 @@ class ProductService
     }
 
     /**
-     * @param  array{category_id: int, name: string, description?: string|null, brand?: string|null, price: numeric, discount_percent?: int|null, stock?: int|null, is_active?: bool, images?: array<int, UploadedFile>|null}  $data
+     * @param  array{category_id: int, name: string, description?: string|null, brand?: string|null, price: numeric, discount_percent?: int|null, discount_starts_at?: string|null, discount_ends_at?: string|null, stock?: int|null, is_active?: bool, images?: array<int, UploadedFile>|null}  $data
      */
     public function create(array $data): Product
     {
@@ -82,6 +83,8 @@ class ProductService
                 'brand' => $data['brand'] ?? null,
                 'price' => $data['price'],
                 'discount_percent' => $data['discount_percent'] ?? 0,
+                'discount_starts_at' => $data['discount_starts_at'] ?? null,
+                'discount_ends_at' => $data['discount_ends_at'] ?? null,
                 'stock' => $data['stock'] ?? 0,
                 'is_active' => $data['is_active'] ?? true,
             ]);
@@ -93,7 +96,7 @@ class ProductService
     }
 
     /**
-     * @param  array{category_id: int, name: string, description?: string|null, brand?: string|null, price: numeric, discount_percent?: int|null, stock?: int|null, is_active?: bool, images?: array<int, UploadedFile>|null, removed_image_ids?: array<int, int>|null}  $data
+     * @param  array{category_id: int, name: string, description?: string|null, brand?: string|null, price: numeric, discount_percent?: int|null, discount_starts_at?: string|null, discount_ends_at?: string|null, stock?: int|null, is_active?: bool, images?: array<int, UploadedFile>|null, removed_image_ids?: array<int, int>|null}  $data
      */
     public function update(Product $product, array $data): Product
     {
@@ -105,6 +108,8 @@ class ProductService
                 'brand' => $data['brand'] ?? null,
                 'price' => $data['price'],
                 'discount_percent' => $data['discount_percent'] ?? 0,
+                'discount_starts_at' => $data['discount_starts_at'] ?? null,
+                'discount_ends_at' => $data['discount_ends_at'] ?? null,
                 'stock' => $data['stock'] ?? 0,
                 'is_active' => $data['is_active'] ?? true,
             ]);
@@ -118,24 +123,33 @@ class ProductService
     }
 
     /**
-     * Apply a discount percentage to a single product.
+     * Apply a discount percentage (and optional schedule) to a single product.
      */
-    public function applyDiscount(Product $product, int $discountPercent): Product
+    public function applyDiscount(Product $product, int $discountPercent, ?string $startsAt = null, ?string $endsAt = null): Product
     {
-        $product->update(['discount_percent' => max(0, min(100, $discountPercent))]);
+        $product->update([
+            'discount_percent' => max(0, min(100, $discountPercent)),
+            'discount_starts_at' => $startsAt,
+            'discount_ends_at' => $endsAt,
+        ]);
 
         return $product;
     }
 
     /**
-     * Apply a discount to many products at once (bulk discount tool).
+     * Apply a discount (and optional schedule) to many products at once
+     * (bulk discount tool).
      *
      * @param  array<int, int>  $productIds
      */
-    public function applyBulkDiscount(array $productIds, int $discountPercent): int
+    public function applyBulkDiscount(array $productIds, int $discountPercent, ?string $startsAt = null, ?string $endsAt = null): int
     {
         return Product::whereIn('id', $productIds)
-            ->update(['discount_percent' => max(0, min(100, $discountPercent))]);
+            ->update([
+                'discount_percent' => max(0, min(100, $discountPercent)),
+                'discount_starts_at' => $startsAt,
+                'discount_ends_at' => $endsAt,
+            ]);
     }
 
     public function delete(Product $product): void

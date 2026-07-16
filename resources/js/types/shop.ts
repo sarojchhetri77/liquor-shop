@@ -32,6 +32,10 @@ export type Product = {
     price: string;
     final_price: number;
     discount_percent: number;
+    effective_discount_percent: number;
+    is_discount_active: boolean;
+    discount_starts_at: string | null;
+    discount_ends_at: string | null;
     rating: string;
     reviews_count: number;
     stock: number;
@@ -92,5 +96,7 @@ export type Order = {
     items?: OrderItem[];
     items_count?: number;
     user?: { id: number; name: string; email: string };
+    can_cancel: boolean;
+    cancellable_until: string | null;
     created_at: string;
 };

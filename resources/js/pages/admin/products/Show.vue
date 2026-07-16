@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ArrowLeft, ExternalLink, Pencil, Star, Trash2 } from '@lucide/vue';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import BottleThumb from '@/components/shop/BottleThumb.vue';
 import StarRating from '@/components/shop/StarRating.vue';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,31 @@ const props = defineProps<{
 }>();
 
 const activeImage = ref(props.product.images?.[0]?.url ?? null);
+
+const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+
+function formatDateTime(value: string | null): string {
+    return value ? dateFormatter.format(new Date(value)) : '—';
+}
+
+/** Human-readable status for a configured discount: active / scheduled / expired. */
+const discountStatus = computed<{ label: string; classes: string } | null>(() => {
+    if (props.product.discount_percent <= 0) {
+        return null;
+    }
+
+    if (props.product.is_discount_active) {
+        return { label: 'Active', classes: 'bg-emerald-500/15 text-emerald-700' };
+    }
+
+    const startsAt = props.product.discount_starts_at;
+
+    if (startsAt && new Date(startsAt) > new Date()) {
+        return { label: 'Scheduled', classes: 'bg-amber-500/15 text-amber-700' };
+    }
+
+    return { label: 'Expired', classes: 'bg-muted text-muted-foreground' };
+});
 
 function destroy(): void {
     if (confirm(`Delete "${props.product.name}"? This cannot be undone.`)) {
@@ -95,10 +120,18 @@ function destroy(): void {
 
                     <div class="mt-4 flex items-end gap-3">
                         <span class="font-display text-3xl font-semibold">{{ formatMoney(product.final_price) }}</span>
-                        <template v-if="product.discount_percent > 0">
+                        <template v-if="product.is_discount_active">
                             <span class="text-lg text-muted-foreground line-through">{{ formatMoney(product.price) }}</span>
-                            <span class="rounded-full bg-gold/15 px-2 py-0.5 text-sm font-medium text-amber-700">-{{ product.discount_percent }}%</span>
+                            <span class="rounded-full bg-gold/15 px-2 py-0.5 text-sm font-medium text-amber-700">-{{ product.effective_discount_percent }}%</span>
                         </template>
+                    </div>
+
+                    <div v-if="discountStatus" class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                        <span :class="cn('inline-flex items-center rounded-full px-2 py-0.5 font-medium', discountStatus.classes)">
+                            {{ product.discount_percent }}% discount · {{ discountStatus.label }}
+                        </span>
+                        <span v-if="product.discount_starts_at">From {{ formatDateTime(product.discount_starts_at) }}</span>
+                        <span v-if="product.discount_ends_at">Until {{ formatDateTime(product.discount_ends_at) }}</span>
                     </div>
 
                     <div class="mt-6 grid grid-cols-2 gap-4 border-t pt-5 text-sm sm:grid-cols-3">
