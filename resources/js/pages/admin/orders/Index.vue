@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
-import { Check, Eye, MoreHorizontal } from '@lucide/vue';
+import { Check, Eye, MoreHorizontal, Search, X } from '@lucide/vue';
+import { reactive } from 'vue';
 import Pagination from '@/components/shop/Pagination.vue';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -16,11 +18,18 @@ import { formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import type { Order, Paginated } from '@/types/shop';
 
-defineProps<{
+const props = defineProps<{
     orders: Paginated<Order>;
-    filters: { status: string };
+    filters: { status: string; search: string; date_from: string; date_to: string };
     statuses: string[];
 }>();
+
+const filters = reactive({
+    status: props.filters.status ?? '',
+    search: props.filters.search ?? '',
+    date_from: props.filters.date_from ?? '',
+    date_to: props.filters.date_to ?? '',
+});
 
 const statusTone: Record<string, string> = {
     pending: 'bg-amber-500/15 text-amber-700',
@@ -30,12 +39,30 @@ const statusTone: Record<string, string> = {
     cancelled: 'bg-red-500/15 text-red-700',
 };
 
-function filterStatus(status: string): void {
+function applyFilters(): void {
     router.get(
         '/admin/orders',
-        { status: status || undefined },
+        {
+            status: filters.status || undefined,
+            search: filters.search || undefined,
+            date_from: filters.date_from || undefined,
+            date_to: filters.date_to || undefined,
+        },
         { preserveState: true, replace: true },
     );
+}
+
+function filterStatus(status: string): void {
+    filters.status = status;
+    applyFilters();
+}
+
+function clearFilters(): void {
+    filters.status = '';
+    filters.search = '';
+    filters.date_from = '';
+    filters.date_to = '';
+    applyFilters();
 }
 
 function setStatus(order: Order, status: string): void {
@@ -54,7 +81,48 @@ function setStatus(order: Order, status: string): void {
 <template>
     <Head title="Orders" />
     <AdminLayout title="Orders">
-        <div class="flex flex-wrap gap-2">
+        <!-- Search + date filters -->
+        <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+            <div class="relative flex-1 sm:max-w-xs">
+                <Search class="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                <input
+                    v-model="filters.search"
+                    type="search"
+                    placeholder="Order #, customer, contact, email…"
+                    class="h-11 w-full rounded-lg border bg-card pr-3 pl-9 text-sm outline-none transition-colors focus:border-primary"
+                    @keyup.enter="applyFilters"
+                />
+            </div>
+            <label class="flex flex-col gap-1 text-xs text-muted-foreground">
+                From
+                <input
+                    v-model="filters.date_from"
+                    type="date"
+                    class="h-11 rounded-lg border bg-card px-3 text-sm outline-none transition-colors focus:border-primary"
+                    @change="applyFilters"
+                />
+            </label>
+            <label class="flex flex-col gap-1 text-xs text-muted-foreground">
+                To
+                <input
+                    v-model="filters.date_to"
+                    type="date"
+                    class="h-11 rounded-lg border bg-card px-3 text-sm outline-none transition-colors focus:border-primary"
+                    @change="applyFilters"
+                />
+            </label>
+            <Button variant="secondary" class="h-11" @click="applyFilters">Search</Button>
+            <Button
+                v-if="filters.search || filters.date_from || filters.date_to || filters.status"
+                variant="ghost"
+                class="h-11 gap-1.5"
+                @click="clearFilters"
+            >
+                <X class="size-4" /> Clear
+            </Button>
+        </div>
+
+        <div class="mt-4 flex flex-wrap gap-2">
             <button
                 :class="cn('rounded-full px-4 py-1.5 text-sm font-medium transition-colors', !filters.status ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:text-foreground')"
                 @click="filterStatus('')"

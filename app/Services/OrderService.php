@@ -71,6 +71,33 @@ class OrderService
         return $order;
     }
 
+    /**
+     * Cancel a pending order on the customer's behalf. Only allowed within
+     * the cancellation window after the order was placed; restores the
+     * reserved stock.
+     */
+    public function cancelForCustomer(Order $order): Order
+    {
+        if (! $order->can_cancel) {
+            throw ValidationException::withMessages([
+                'order' => sprintf(
+                    'This order can no longer be cancelled — orders can only be cancelled within %d minutes of being placed.',
+                    Order::CANCEL_WINDOW_MINUTES,
+                ),
+            ]);
+        }
+
+        return DB::transaction(function () use ($order): Order {
+            foreach ($order->items as $item) {
+                $item->product?->increment('stock', $item->quantity);
+            }
+
+            $order->update(['status' => OrderStatus::Cancelled]);
+
+            return $order;
+        });
+    }
+
     private function generateOrderNumber(): string
     {
         do {

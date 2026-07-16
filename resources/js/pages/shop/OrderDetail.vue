@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
-import { ArrowLeft, CheckCircle2 } from '@lucide/vue';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { ArrowLeft, CheckCircle2, Clock, XCircle } from '@lucide/vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import ShopLayout from '@/layouts/ShopLayout.vue';
 import { formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import type { Order } from '@/types/shop';
 
-defineProps<{
+const props = defineProps<{
     order: Order;
 }>();
 
@@ -18,6 +20,44 @@ const statusTone: Record<string, string> = {
     delivered: 'bg-emerald-500/15 text-emerald-600',
     cancelled: 'bg-red-500/15 text-red-600',
 };
+
+// Live countdown for the cancellation window so the button disappears the
+// moment the 5 minutes are up, without needing a page refresh.
+const now = ref(Date.now());
+let timer: ReturnType<typeof setInterval> | null = null;
+
+onMounted(() => {
+    timer = setInterval(() => (now.value = Date.now()), 1000);
+});
+
+onBeforeUnmount(() => {
+    if (timer) {
+        clearInterval(timer);
+    }
+});
+
+const secondsLeft = computed(() => {
+    if (!props.order.cancellable_until) {
+        return 0;
+    }
+
+    return Math.max(0, Math.floor((new Date(props.order.cancellable_until).getTime() - now.value) / 1000));
+});
+
+const canCancel = computed(() => props.order.can_cancel && secondsLeft.value > 0);
+
+const countdown = computed(() => {
+    const minutes = Math.floor(secondsLeft.value / 60);
+    const seconds = String(secondsLeft.value % 60).padStart(2, '0');
+
+    return `${minutes}:${seconds}`;
+});
+
+function cancelOrder(): void {
+    if (confirm('Cancel this order? The items will be returned to stock.')) {
+        router.post(`/orders/${props.order.id}/cancel`, {}, { preserveScroll: true });
+    }
+}
 </script>
 
 <template>
@@ -32,6 +72,19 @@ const statusTone: Record<string, string> = {
             </Link>
 
             <div
+                v-if="order.status === 'cancelled'"
+                class="mb-4 flex items-center gap-3 rounded-xl border border-red-500/30 bg-red-500/5 p-4"
+            >
+                <XCircle class="size-6 text-red-600" />
+                <div>
+                    <p class="font-medium">Order cancelled</p>
+                    <p class="text-sm text-muted-foreground">
+                        This order was cancelled and will not be delivered.
+                    </p>
+                </div>
+            </div>
+            <div
+                v-else
                 class="mb-4 flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4"
             >
                 <CheckCircle2 class="size-6 text-emerald-600" />
@@ -41,6 +94,35 @@ const statusTone: Record<string, string> = {
                         We'll deliver soon. Pay cash on delivery.
                     </p>
                 </div>
+            </div>
+
+            <!-- Cancellation window -->
+            <div
+                v-if="canCancel"
+                class="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4"
+            >
+                <div class="flex items-center gap-3">
+                    <Clock class="size-6 text-amber-600" />
+                    <div>
+                        <p class="font-medium">Changed your mind?</p>
+                        <p class="text-sm text-muted-foreground">
+                            You can cancel this order for another
+                            <span class="font-semibold text-amber-600 tabular-nums">{{ countdown }}</span>
+                            minutes.
+                        </p>
+                    </div>
+                </div>
+                <Button variant="destructive" @click="cancelOrder">Cancel order</Button>
+            </div>
+            <div
+                v-else-if="order.status === 'pending'"
+                class="mb-4 flex items-center gap-3 rounded-xl border bg-muted/40 p-4"
+            >
+                <Clock class="size-6 text-muted-foreground" />
+                <p class="text-sm text-muted-foreground">
+                    This order can no longer be cancelled — orders can only be cancelled within
+                    <span class="font-semibold">5 minutes</span> of being placed. Please contact us if you need help.
+                </p>
             </div>
 
             <div class="rounded-xl border bg-card">

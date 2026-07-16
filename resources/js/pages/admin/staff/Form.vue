@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { ArrowLeft } from '@lucide/vue';
-import { computed } from 'vue';
+import { ArrowLeft, Check, Copy, Eye, EyeOff } from '@lucide/vue';
+import { computed, ref } from 'vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -31,6 +31,19 @@ const form = useForm({
 
 const inputClass =
     'h-10 w-full rounded-md border bg-background px-3 text-sm outline-none focus:border-primary';
+
+const showPassword = ref(false);
+const copied = ref(false);
+
+async function copyPassword(): Promise<void> {
+    if (!form.password) {
+        return;
+    }
+
+    await navigator.clipboard.writeText(form.password);
+    copied.value = true;
+    setTimeout(() => (copied.value = false), 2000);
+}
 
 function submit(): void {
     if (isEdit.value) {
@@ -105,14 +118,38 @@ function submit(): void {
                         <Label for="password">{{
                             isEdit ? 'New password' : 'Password'
                         }}</Label>
-                        <input
-                            id="password"
-                            v-model="form.password"
-                            type="password"
-                            :class="inputClass"
-                            :required="!isEdit"
-                            autocomplete="new-password"
-                        />
+                        <div class="relative">
+                            <input
+                                id="password"
+                                v-model="form.password"
+                                :type="showPassword ? 'text' : 'password'"
+                                :class="[inputClass, 'pr-16']"
+                                :required="!isEdit"
+                                autocomplete="new-password"
+                            />
+                            <div class="absolute inset-y-0 right-2 flex items-center gap-0.5">
+                                <button
+                                    type="button"
+                                    class="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                                    :aria-label="showPassword ? 'Hide password' : 'Show password'"
+                                    @click="showPassword = !showPassword"
+                                >
+                                    <EyeOff v-if="showPassword" class="size-4" />
+                                    <Eye v-else class="size-4" />
+                                </button>
+                                <button
+                                    type="button"
+                                    class="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+                                    :disabled="!form.password"
+                                    :aria-label="copied ? 'Password copied' : 'Copy password'"
+                                    @click="copyPassword"
+                                >
+                                    <Check v-if="copied" class="size-4 text-emerald-600" />
+                                    <Copy v-else class="size-4" />
+                                </button>
+                            </div>
+                        </div>
+                        <p v-if="copied" class="text-xs text-emerald-600">Password copied to clipboard.</p>
                         <InputError :message="form.errors.password" />
                     </div>
                     <div class="grid gap-1.5">
@@ -122,7 +159,7 @@ function submit(): void {
                         <input
                             id="password_confirmation"
                             v-model="form.password_confirmation"
-                            type="password"
+                            :type="showPassword ? 'text' : 'password'"
                             :class="inputClass"
                             autocomplete="new-password"
                         />

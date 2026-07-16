@@ -19,14 +19,31 @@ class OrderController extends Controller
     public function index(Request $request): Response
     {
         $status = $request->string('status')->toString();
+        $search = $request->string('search')->toString();
+        $dateFrom = $request->string('date_from')->toString();
+        $dateTo = $request->string('date_to')->toString();
 
         return Inertia::render('admin/orders/Index', [
             'orders' => Order::with('user')
                 ->when($status, fn ($query) => $query->where('status', $status))
+                ->when($search, fn ($query) => $query->where(
+                    fn ($inner) => $inner
+                        ->where('order_number', 'like', "%{$search}%")
+                        ->orWhere('customer_name', 'like', "%{$search}%")
+                        ->orWhere('contact', 'like', "%{$search}%")
+                        ->orWhereHas('user', fn ($user) => $user->where('email', 'like', "%{$search}%"))
+                ))
+                ->when($dateFrom, fn ($query) => $query->whereDate('created_at', '>=', $dateFrom))
+                ->when($dateTo, fn ($query) => $query->whereDate('created_at', '<=', $dateTo))
                 ->latest()
                 ->paginate(15)
                 ->withQueryString(),
-            'filters' => ['status' => $status],
+            'filters' => [
+                'status' => $status,
+                'search' => $search,
+                'date_from' => $dateFrom,
+                'date_to' => $dateTo,
+            ],
             'statuses' => OrderStatus::values(),
         ]);
     }

@@ -42,6 +42,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/orders', [ShopOrderController::class, 'index'])->name('shop.orders.index');
     Route::get('/orders/{order}', [ShopOrderController::class, 'show'])->name('shop.orders.show');
+    Route::post('/orders/{order}/cancel', [ShopOrderController::class, 'cancel'])->name('shop.orders.cancel');
 
     Route::post('/products/{product}/reviews', [ReviewController::class, 'store'])->name('shop.reviews.store');
 });
