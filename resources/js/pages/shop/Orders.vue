@@ -4,7 +4,7 @@ import { Package } from '@lucide/vue';
 import Pagination from '@/components/shop/Pagination.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import ShopLayout from '@/layouts/ShopLayout.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import type { Order, Paginated } from '@/types/shop';
@@ -24,7 +24,7 @@ const statusTone: Record<string, string> = {
 
 <template>
     <Head title="My orders" />
-    <ShopLayout>
+    <AppLayout>
         <div class="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6">
             <h1 class="mb-6 font-display text-3xl font-semibold">My orders</h1>
 
@@ -73,5 +73,5 @@ const statusTone: Record<string, string> = {
                 >
             </div>
         </div>
-    </ShopLayout>
+    </AppLayout>
 </template>

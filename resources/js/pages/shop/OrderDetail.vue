@@ -4,7 +4,7 @@ import { ArrowLeft, CheckCircle2, Clock, XCircle } from '@lucide/vue';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import ShopLayout from '@/layouts/ShopLayout.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import type { Order } from '@/types/shop';
@@ -62,7 +62,7 @@ function cancelOrder(): void {
 
 <template>
     <Head :title="order.order_number" />
-    <ShopLayout>
+    <AppLayout>
         <div class="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6">
             <Link
                 href="/orders"
@@ -195,5 +195,5 @@ function cancelOrder(): void {
                 </div>
             </div>
         </div>
-    </ShopLayout>
+    </AppLayout>
 </template>

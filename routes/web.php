@@ -8,11 +8,11 @@ use App\Http\Controllers\Admin\PromotionController as AdminPromotionController;
 use App\Http\Controllers\Admin\StaffController as AdminStaffController;
 use App\Http\Controllers\Shop\CartController;
 use App\Http\Controllers\Shop\CheckoutController;
+use App\Http\Controllers\Shop\DashboardController as ShopDashboardController;
 use App\Http\Controllers\Shop\HomeController;
 use App\Http\Controllers\Shop\OrderController as ShopOrderController;
 use App\Http\Controllers\Shop\ProductController as ShopProductController;
 use App\Http\Controllers\Shop\ReviewController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,12 +24,10 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products', [ShopProductController::class, 'index'])->name('shop.products.index');
 Route::get('/products/{product:slug}', [ShopProductController::class, 'show'])->name('shop.products.show');
 
-// Post-login landing: staff/admins go to the panel, customers to their orders.
-Route::get('/dashboard', function (Request $request) {
-    return $request->user()?->canAccessAdminPanel()
-        ? redirect()->route('admin.dashboard')
-        : redirect()->route('shop.orders.index');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Post-login landing: staff/admins go to the panel, customers to their account dashboard.
+Route::get('/dashboard', [ShopDashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('shop.cart.index');
