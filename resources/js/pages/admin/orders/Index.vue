@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, usePoll } from '@inertiajs/vue3';
 import { Check, Eye, MoreHorizontal, Search, X } from '@lucide/vue';
 import { reactive } from 'vue';
 import Pagination from '@/components/shop/Pagination.vue';
@@ -30,6 +30,11 @@ const filters = reactive({
     date_from: props.filters.date_from ?? '',
     date_to: props.filters.date_to ?? '',
 });
+
+// Auto-refresh the orders table every 10s so new orders appear without a manual
+// reload. Only the `orders` prop is re-fetched, and the current filters/URL are
+// preserved, so this is a lightweight background request.
+usePoll(10000, { only: ['orders'] });
 
 const statusTone: Record<string, string> = {
     pending: 'bg-amber-500/15 text-amber-700',

@@ -201,21 +201,19 @@ function submit(): void {
                             <InputError :message="form.errors.discount_percent" />
                         </div>
 
-                        <div v-if="Number(form.discount_percent) > 0" class="grid gap-5 rounded-lg border border-dashed p-3.5 sm:grid-cols-2">
-                            <div class="grid gap-1.5 sm:col-span-2">
-                                <p class="text-xs text-muted-foreground">
-                                    Optionally schedule the discount. Leave the start empty to begin immediately, and the
-                                    end empty to run indefinitely. The discount turns off automatically once it expires.
-                                </p>
-                            </div>
-                            <div class="grid gap-1.5">
+                        <div v-if="Number(form.discount_percent) > 0" class="grid gap-4 rounded-lg border border-dashed p-3.5">
+                            <p class="text-xs text-muted-foreground">
+                                Optionally schedule the discount. Leave the start empty to begin immediately, and the
+                                end empty to run indefinitely. The discount turns off automatically once it expires.
+                            </p>
+                            <div class="grid min-w-0 gap-1.5">
                                 <Label for="discount_starts_at">Starts</Label>
-                                <input id="discount_starts_at" v-model="form.discount_starts_at" type="datetime-local" :class="inputClass" />
+                                <input id="discount_starts_at" v-model="form.discount_starts_at" type="datetime-local" :class="cn(inputClass, 'min-w-0')" />
                                 <InputError :message="form.errors.discount_starts_at" />
                             </div>
-                            <div class="grid gap-1.5">
+                            <div class="grid min-w-0 gap-1.5">
                                 <Label for="discount_ends_at">Expires</Label>
-                                <input id="discount_ends_at" v-model="form.discount_ends_at" type="datetime-local" :class="inputClass" />
+                                <input id="discount_ends_at" v-model="form.discount_ends_at" type="datetime-local" :class="cn(inputClass, 'min-w-0')" />
                                 <InputError :message="form.errors.discount_ends_at" />
                             </div>
                         </div>

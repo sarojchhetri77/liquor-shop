@@ -53,7 +53,6 @@ function submit(): void {
                                     id="customer_name"
                                     v-model="form.customer_name"
                                     :class="inputClass"
-                                    required
                                 />
                                 <InputError
                                     :message="form.errors.customer_name"
@@ -65,7 +64,6 @@ function submit(): void {
                                     id="contact"
                                     v-model="form.contact"
                                     :class="inputClass"
-                                    required
                                 />
                                 <InputError :message="form.errors.contact" />
                             </div>
@@ -79,7 +77,6 @@ function submit(): void {
                                     rows="3"
                                     placeholder="Street, city, postal code"
                                     class="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
-                                    required
                                 />
                                 <InputError
                                     :message="form.errors.shipping_address"

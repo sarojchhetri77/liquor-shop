@@ -33,11 +33,10 @@ defineOptions({
     >
         <div class="grid gap-6">
             <div class="grid gap-2">
-                <Label for="name">Name</Label>
+                <Label for="name">Name <span class="text-red-500">*</span></Label>
                 <Input
                     id="name"
                     type="text"
-                    required
                     autofocus
                     :tabindex="1"
                     autocomplete="name"
@@ -48,11 +47,10 @@ defineOptions({
             </div>
 
             <div class="grid gap-2">
-                <Label for="email">Email address</Label>
+                <Label for="email">Email address <span class="text-red-500">*</span></Label>
                 <Input
                     id="email"
                     type="email"
-                    required
                     :tabindex="2"
                     autocomplete="email"
                     name="email"
@@ -63,25 +61,22 @@ defineOptions({
 
             <div class="grid gap-4 sm:grid-cols-2">
                 <div class="grid gap-2">
-                    <Label for="contact">Contact number</Label>
+                    <Label for="contact">Contact number <span class="text-red-500">*</span></Label>
                     <Input
                         id="contact"
                         type="text"
-                        required
                         :tabindex="3"
                         autocomplete="tel"
                         name="contact"
-                        placeholder="+1 555 000 1234"
                     />
                     <InputError :message="errors.contact" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="dob">Date of birth</Label>
+                    <Label for="dob">Date of birth <span class="text-red-500">*</span></Label>
                     <Input
                         id="dob"
                         type="date"
-                        required
                         :tabindex="4"
                         name="dob"
                     />
@@ -90,10 +85,9 @@ defineOptions({
             </div>
 
             <div class="grid gap-2">
-                <Label for="password">Password</Label>
+                <Label for="password">Password <span class="text-red-500">*</span></Label>
                 <PasswordInput
                     id="password"
-                    required
                     :tabindex="5"
                     autocomplete="new-password"
                     name="password"
@@ -104,10 +98,9 @@ defineOptions({
             </div>
 
             <div class="grid gap-2">
-                <Label for="password_confirmation">Confirm password</Label>
+                <Label for="password_confirmation">Confirm password <span class="text-red-500">*</span></Label>
                 <PasswordInput
                     id="password_confirmation"
-                    required
                     :tabindex="6"
                     autocomplete="new-password"
                     name="password_confirmation"
