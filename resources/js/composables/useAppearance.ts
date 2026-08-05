@@ -75,15 +75,15 @@ export function initializeTheme(): void {
         return;
     }
 
-    // Initialize theme from saved preference or default to light...
+    // Initialize theme from saved preference or default to dark...
     const savedAppearance = getStoredAppearance();
-    updateTheme(savedAppearance || 'light');
+    updateTheme(savedAppearance || 'dark');
 
     // Set up system theme change listener...
     mediaQuery()?.addEventListener('change', handleSystemThemeChange);
 }
 
-const appearance = ref<Appearance>('light');
+const appearance = ref<Appearance>('dark');
 
 export function useAppearance(): UseAppearanceReturn {
     onMounted(() => {

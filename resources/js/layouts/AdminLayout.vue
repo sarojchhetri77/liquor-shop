@@ -11,10 +11,10 @@ import {
     Tags,
     User as UserIcon,
     Users,
-    Wine,
 } from '@lucide/vue';
 import type { LucideIcon } from '@lucide/vue';
 import { computed, ref } from 'vue';
+import AppearanceToggle from '@/components/AppearanceToggle.vue';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -78,11 +78,11 @@ function logout(): void {
             class="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r bg-card md:flex"
         >
             <div class="flex h-[68px] items-center gap-2.5 border-b px-6">
-                <span class="flex size-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                    <Wine class="size-5 text-gold" :stroke-width="1.5" />
+                <span class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md bg-white">
+                    <img src="/pb_store_logo.jpeg" alt="PB Store" class="size-full object-contain" />
                 </span>
                 <div class="leading-none">
-                    <p class="font-display text-xl font-semibold text-foreground">Nectar</p>
+                    <p class="font-display text-xl font-semibold text-foreground">PB Store</p>
                     <p class="mt-0.5 text-[10px] font-semibold tracking-[0.3em] text-primary/70 uppercase">Admin</p>
                 </div>
             </div>
@@ -105,7 +105,7 @@ function logout(): void {
                     <component
                         :is="item.icon"
                         class="size-5"
-                        :class="isActive(item.href) ? 'text-gold' : 'text-muted-foreground'"
+                        :class="isActive(item.href) ? 'text-primary-foreground' : 'text-muted-foreground'"
                     />
                     {{ item.label }}
                 </Link>
@@ -140,11 +140,11 @@ function logout(): void {
                     </SheetTrigger>
                     <SheetContent side="left" class="w-72 bg-card p-0">
                         <div class="flex h-[68px] items-center gap-2.5 border-b px-6">
-                            <span class="flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                                <Wine class="size-4.5 text-gold" :stroke-width="1.5" />
+                            <span class="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-md bg-white">
+                                <img src="/pb_store_logo.jpeg" alt="PB Store" class="size-full object-contain" />
                             </span>
                             <div class="leading-none">
-                                <p class="font-display text-lg font-semibold text-foreground">Nectar</p>
+                                <p class="font-display text-lg font-semibold text-foreground">PB Store</p>
                                 <p class="mt-0.5 text-[10px] font-semibold tracking-[0.3em] text-primary/70 uppercase">Admin</p>
                             </div>
                         </div>
@@ -164,7 +164,7 @@ function logout(): void {
                                 <component
                                     :is="item.icon"
                                     class="size-5"
-                                    :class="isActive(item.href) ? 'text-gold' : 'text-muted-foreground'"
+                                    :class="isActive(item.href) ? 'text-primary-foreground' : 'text-muted-foreground'"
                                 />
                                 {{ item.label }}
                             </Link>
@@ -174,9 +174,11 @@ function logout(): void {
 
                 <h1 class="font-display text-xl font-semibold">{{ title }}</h1>
 
+                <AppearanceToggle class="ml-auto" />
+
                 <DropdownMenu>
                     <DropdownMenuTrigger
-                        class="ml-auto flex items-center gap-3 rounded-full py-1 pr-1 pl-3 transition-colors outline-none hover:bg-muted"
+                        class="flex items-center gap-3 rounded-full py-1 pr-1 pl-3 transition-colors outline-none hover:bg-muted"
                     >
                         <div class="hidden text-right sm:block">
                             <p class="text-sm font-medium">{{ auth.user?.name }}</p>

@@ -14,26 +14,26 @@ const props = withDefaults(
 type Style = { gradient: string; icon: typeof Wine };
 
 const styles: Record<string, Style> = {
-    wine: { gradient: 'from-rose-900 via-red-800 to-rose-950', icon: Wine },
-    red: { gradient: 'from-rose-900 via-red-800 to-rose-950', icon: Wine },
-    champagne: { gradient: 'from-amber-300 via-yellow-400 to-amber-500', icon: Wine },
-    sparkling: { gradient: 'from-amber-300 via-yellow-400 to-amber-500', icon: Wine },
-    whiskey: { gradient: 'from-amber-700 via-amber-800 to-amber-950', icon: GlassWater },
-    whisky: { gradient: 'from-amber-700 via-amber-800 to-amber-950', icon: GlassWater },
-    bourbon: { gradient: 'from-amber-700 via-amber-800 to-amber-950', icon: GlassWater },
-    rum: { gradient: 'from-orange-800 via-amber-800 to-orange-950', icon: GlassWater },
-    tequila: { gradient: 'from-lime-600 via-amber-600 to-orange-800', icon: GlassWater },
-    beer: { gradient: 'from-yellow-500 via-amber-500 to-amber-700', icon: Beer },
-    vodka: { gradient: 'from-slate-300 via-slate-400 to-slate-600', icon: Martini },
-    gin: { gradient: 'from-teal-500 via-emerald-600 to-slate-700', icon: Martini },
-    cocktail: { gradient: 'from-fuchsia-500 via-rose-500 to-orange-500', icon: Martini },
+    wine: { gradient: 'from-neutral-600 via-neutral-800 to-neutral-950', icon: Wine },
+    red: { gradient: 'from-neutral-600 via-neutral-800 to-neutral-950', icon: Wine },
+    champagne: { gradient: 'from-neutral-400 via-neutral-500 to-neutral-700', icon: Wine },
+    sparkling: { gradient: 'from-neutral-400 via-neutral-500 to-neutral-700', icon: Wine },
+    whiskey: { gradient: 'from-neutral-600 via-neutral-700 to-neutral-900', icon: GlassWater },
+    whisky: { gradient: 'from-neutral-600 via-neutral-700 to-neutral-900', icon: GlassWater },
+    bourbon: { gradient: 'from-neutral-600 via-neutral-700 to-neutral-900', icon: GlassWater },
+    rum: { gradient: 'from-neutral-600 via-neutral-700 to-neutral-900', icon: GlassWater },
+    tequila: { gradient: 'from-neutral-500 via-neutral-600 to-neutral-800', icon: GlassWater },
+    beer: { gradient: 'from-neutral-500 via-neutral-600 to-neutral-800', icon: Beer },
+    vodka: { gradient: 'from-neutral-400 via-neutral-500 to-neutral-700', icon: Martini },
+    gin: { gradient: 'from-neutral-500 via-neutral-600 to-neutral-800', icon: Martini },
+    cocktail: { gradient: 'from-neutral-500 via-neutral-600 to-neutral-800', icon: Martini },
 };
 
 const resolved = computed<Style>(() => {
     const haystack = `${props.category} ${props.name}`.toLowerCase();
     const match = Object.keys(styles).find((key) => haystack.includes(key));
 
-    return match ? styles[match] : { gradient: 'from-primary via-rose-900 to-rose-950', icon: Wine };
+    return match ? styles[match] : { gradient: 'from-neutral-600 via-neutral-800 to-neutral-950', icon: Wine };
 });
 
 const monogram = computed(() => (props.name || props.category || 'B').charAt(0).toUpperCase());

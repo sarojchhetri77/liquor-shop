@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Head, Link, usePage } from '@inertiajs/vue3';
-import { ArrowRight, Star, Truck } from '@lucide/vue';
+import { ArrowRight, Beer, GlassWater, Martini, Star, Truck, Wine } from '@lucide/vue';
+import type { LucideIcon } from '@lucide/vue';
 import { computed } from 'vue';
-import BottleThumb from '@/components/shop/BottleThumb.vue';
 import ProductCard from '@/components/shop/ProductCard.vue';
 import PromoModal from '@/components/shop/PromoModal.vue';
 import { Button } from '@/components/ui/button';
@@ -14,14 +14,33 @@ defineProps<{
     featured: Product[];
     discounted: Product[];
     categories: Category[];
+    featuredHasMore: boolean;
 }>();
 
 const page = usePage();
 const canBuy = computed(() => !!page.props.auth.user);
+
+function categoryIcon(name: string): LucideIcon {
+    const key = name.toLowerCase();
+
+    if (key.includes('beer')) {
+        return Beer;
+    }
+
+    if (key.includes('wine') || key.includes('champagne')) {
+        return Wine;
+    }
+
+    if (key.includes('whisk') || key.includes('tequila') || key.includes('vodka')) {
+        return GlassWater;
+    }
+
+    return Martini;
+}
 </script>
 
 <template>
-    <Head title="Nectar — Fine Wine & Spirits, delivered" />
+    <Head title="PB Store — Fine Wine & Spirits, delivered" />
     <ShopLayout>
         <PromoModal />
 
@@ -33,19 +52,19 @@ const canBuy = computed(() => !!page.props.auth.user);
                 class="animate-kenburns absolute inset-0 -z-20 h-full w-full object-cover"
             />
             <!-- Legibility overlays -->
-            <div class="absolute inset-0 -z-10 bg-gradient-to-r from-rose-950/95 via-rose-950/75 to-rose-950/25"></div>
-            <div class="absolute inset-0 -z-10 bg-gradient-to-t from-rose-950/90 via-transparent to-rose-950/50"></div>
+            <div class="absolute inset-0 -z-10 bg-gradient-to-r from-neutral-950/95 via-neutral-950/75 to-neutral-950/25"></div>
+            <div class="absolute inset-0 -z-10 bg-gradient-to-t from-neutral-950/90 via-transparent to-neutral-950/50"></div>
 
             <div class="mx-auto w-full max-w-7xl px-4 pt-24 pb-32 sm:px-6 lg:pt-28">
-                <div class="max-w-2xl text-primary-foreground">
+                <div class="max-w-2xl text-white">
                     <p class="flex items-center gap-3 text-xs font-semibold tracking-[0.28em] text-gold uppercase">
-                        <span class="h-px w-12 bg-gold/60"></span> Est. 2024 · Kathmandu
+                        <span class="h-px w-12 bg-gold/60"></span> Est. 2024 · Imadol, Lalitpur
                     </p>
                     <h1 class="mt-7 font-display text-5xl leading-[1.02] font-semibold sm:text-6xl lg:text-8xl">
                         Life's too short<br />
                         for <span class="text-gold italic">ordinary</span> drinks.
                     </h1>
-                    <p class="mt-7 max-w-lg text-lg leading-relaxed text-primary-foreground/80">
+                    <p class="mt-7 max-w-lg text-lg leading-relaxed text-white/80">
                         A hand-picked cellar of wines, single malts, craft beer and
                         spirits — delivered cold and discreet to your door.
                     </p>
@@ -66,9 +85,9 @@ const canBuy = computed(() => !!page.props.auth.user);
             </div>
 
             <!-- Bottom stats strip -->
-            <div class="absolute inset-x-0 bottom-0 border-t border-white/10 bg-rose-950/40 backdrop-blur">
+            <div class="absolute inset-x-0 bottom-0 border-t border-white/10 bg-neutral-950/40 backdrop-blur">
                 <div
-                    class="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-center gap-x-10 gap-y-2 px-4 py-4 text-sm text-primary-foreground/90 sm:justify-between sm:px-6"
+                    class="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-center gap-x-10 gap-y-2 px-4 py-4 text-sm text-white/90 sm:justify-between sm:px-6"
                 >
                     <span class="flex items-center gap-2">
                         <Star class="size-4 fill-gold text-gold" /> 4.8 rating · 2k+ reviews
@@ -96,36 +115,37 @@ const canBuy = computed(() => !!page.props.auth.user);
                     View all
                 </Link>
             </div>
-            <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+            <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
                 <Link
                     v-for="(category, i) in categories"
                     :key="category.id"
                     v-reveal="{ delay: i * 60 }"
                     :href="`/products?category_id=${category.id}`"
-                    class="group relative aspect-[3/4] overflow-hidden rounded-xl border"
+                    class="group flex flex-col items-center gap-4 rounded-2xl border bg-card p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:border-foreground/25 hover:shadow-xl"
                 >
-                    <img
-                        v-if="category.image"
-                        :src="category.image"
-                        :alt="category.name"
-                        class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <BottleThumb
-                        v-else
-                        :name="category.name"
-                        :category="category.name"
-                        class="transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div class="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/75 via-black/10 to-transparent p-3">
-                        <span class="font-display text-lg font-medium text-white">{{ category.name }}</span>
-                        <span class="text-[11px] uppercase tracking-wider text-white/70">{{ category.products_count ?? 0 }} labels</span>
+                    <span
+                        class="flex size-16 items-center justify-center rounded-full bg-muted text-foreground transition-colors duration-300 group-hover:bg-foreground group-hover:text-background"
+                    >
+                        <component :is="categoryIcon(category.name)" class="size-7" :stroke-width="1.5" />
+                    </span>
+                    <div class="space-y-0.5">
+                        <p class="font-display text-lg font-semibold">{{ category.name }}</p>
+                        <p class="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+                            {{ category.products_count ?? 0 }}
+                            {{ (category.products_count ?? 0) === 1 ? 'label' : 'labels' }}
+                        </p>
                     </div>
+                    <span
+                        class="flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground transition-colors group-hover:text-foreground"
+                    >
+                        Shop <ArrowRight class="size-3.5 transition-transform group-hover:translate-x-0.5" />
+                    </span>
                 </Link>
             </div>
         </section>
 
         <!-- Editorial banner -->
-        <section class="bg-primary text-primary-foreground">
+        <section class="border-y bg-card">
             <div
                 v-reveal
                 class="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-6 px-4 py-14 text-center sm:px-6 md:flex-row md:text-left"
@@ -135,9 +155,9 @@ const canBuy = computed(() => !!page.props.auth.user);
                     <h2 class="font-display text-3xl font-semibold sm:text-4xl">
                         Free, discreet delivery across the valley.
                     </h2>
-                    <p class="text-primary-foreground/70">Order before 8 PM for same-day dispatch. No advance payment required.</p>
+                    <p class="text-muted-foreground">Order before 8 PM for same-day dispatch. No advance payment required.</p>
                 </div>
-                <Button as-child size="lg" variant="secondary" class="rounded-full px-7">
+                <Button as-child size="lg" class="rounded-full px-7">
                     <Link href="/products">Start your order</Link>
                 </Button>
             </div>
@@ -166,7 +186,7 @@ const canBuy = computed(() => !!page.props.auth.user);
         </section>
 
         <!-- Featured -->
-        <section class="border-t bg-accent/20">
+        <section class="border-t bg-card">
             <div class="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6">
                 <div v-reveal class="mb-8 text-center">
                     <p class="eyebrow mb-2">Customer favourites</p>
@@ -180,6 +200,14 @@ const canBuy = computed(() => !!page.props.auth.user);
                         :product="product"
                         :can-buy="canBuy"
                     />
+                </div>
+
+                <div v-if="featuredHasMore" class="mt-10 text-center">
+                    <Button as-child size="lg" variant="outline" class="rounded-full px-8">
+                        <Link href="/products" class="gap-2">
+                            View more products <ArrowRight class="size-4" />
+                        </Link>
+                    </Button>
                 </div>
             </div>
         </section>

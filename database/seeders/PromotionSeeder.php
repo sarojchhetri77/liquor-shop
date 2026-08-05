@@ -15,7 +15,7 @@ class PromotionSeeder extends Seeder
         Promotion::factory()->create([
             'title' => 'Weekend Special — 15% off all whisky. Enjoy!',
             'link' => '/products?category_id=1',
-            'image' => 'https://placehold.co/1000x640/7a1f3d/f4e4c1?text=Nectar+Weekend+Special%0A15%25+OFF+Whisky',
+            'image' => 'https://placehold.co/1000x640/171717/f5f5f5?text=PB+Store+Weekend+Special%0A15%25+OFF+Whisky',
             'is_active' => true,
         ]);
     }

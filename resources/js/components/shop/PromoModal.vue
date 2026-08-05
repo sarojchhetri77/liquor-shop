@@ -44,7 +44,7 @@ function dismiss(): void {
             >
                 <div class="relative w-full max-w-2xl">
                     <button
-                        class="absolute -top-3 -right-3 z-10 flex size-9 items-center justify-center rounded-full bg-white text-foreground shadow-lg transition-transform hover:scale-105"
+                        class="absolute -top-3 -right-3 z-10 flex size-9 items-center justify-center rounded-full bg-background text-foreground shadow-lg transition-transform hover:scale-105"
                         aria-label="Close"
                         @click="dismiss"
                     >

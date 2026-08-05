@@ -2,6 +2,7 @@
 import { Link, router, usePage } from '@inertiajs/vue3';
 import {
     Clock,
+    LayoutDashboard,
     LogOut,
     Mail,
     MapPin,
@@ -12,9 +13,12 @@ import {
     ShoppingCart,
     Truck,
     User as UserIcon,
-    Wine,
 } from '@lucide/vue';
 import { computed, ref } from 'vue';
+import AppearanceToggle from '@/components/AppearanceToggle.vue';
+import FacebookIcon from '@/components/icons/FacebookIcon.vue';
+import InstagramIcon from '@/components/icons/InstagramIcon.vue';
+import TikTokIcon from '@/components/icons/TikTokIcon.vue';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -57,23 +61,23 @@ const navLinks = [
 ];
 
 const socials = [
-    { label: 'Facebook', short: 'Fb', href: '#' },
-    { label: 'Instagram', short: 'Ig', href: '#' },
-    { label: 'X', short: 'X', href: '#' },
+    { label: 'Instagram', icon: InstagramIcon, href: '#' },
+    { label: 'Facebook', icon: FacebookIcon, href: '#' },
+    { label: 'TikTok', icon: TikTokIcon, href: '#' },
 ];
 </script>
 
 <template>
     <div class="flex min-h-screen flex-col bg-background text-foreground">
         <!-- Announcement bar -->
-        <div class="bg-primary text-primary-foreground">
+        <div class="border-b bg-card text-foreground">
             <div
                 class="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-center gap-x-6 gap-y-1 px-4 py-2 text-[11px] uppercase tracking-[0.16em] sm:justify-between sm:px-6"
             >
                 <div class="flex flex-wrap items-center gap-x-6 gap-y-1">
                     <span class="flex items-center gap-1.5">
                         <Phone class="size-3.5 text-gold" /> Order by phone
-                        <a href="tel:+97714416789" class="font-semibold hover:underline">01-4416789</a>
+                        <a href="tel:+9779841307715" class="font-semibold hover:underline">9841307715</a>
                     </span>
                     <span class="hidden items-center gap-1.5 sm:flex">
                         <Clock class="size-3.5 text-gold" /> 11:00 – 21:30 (NST)
@@ -93,13 +97,13 @@ const socials = [
             >
                 <Link href="/" class="flex items-center gap-2.5">
                     <span
-                        class="flex size-10 items-center justify-center rounded-full border border-gold/40 bg-primary text-primary-foreground"
+                        class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md bg-white"
                     >
-                        <Wine class="size-5 text-gold" :stroke-width="1.5" />
+                        <img src="/pb_store_logo.jpeg" alt="PB Store" class="size-full object-contain" />
                     </span>
                     <span class="hidden flex-col leading-none sm:flex">
                         <span class="font-display text-2xl font-semibold tracking-tight">
-                            Nectar<span class="text-gold">.</span>
+                            PB Store<span class="text-gold">.</span>
                         </span>
                         <span class="text-[9px] font-medium uppercase tracking-[0.3em] text-muted-foreground">
                             Fine Wine &amp; Spirits
@@ -134,6 +138,7 @@ const socials = [
                 </form>
 
                 <div class="ml-auto flex items-center gap-1 sm:ml-0">
+                    <AppearanceToggle />
                     <Link
                         href="/cart"
                         class="relative flex size-10 items-center justify-center rounded-full text-foreground transition-colors hover:bg-muted"
@@ -168,6 +173,14 @@ const socials = [
                                     </div>
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
+                                <DropdownMenuItem as-child>
+                                    <Link
+                                        href="/dashboard"
+                                        class="flex w-full items-center gap-2"
+                                    >
+                                        <LayoutDashboard class="size-4" /> Dashboard
+                                    </Link>
+                                </DropdownMenuItem>
                                 <DropdownMenuItem as-child>
                                     <Link
                                         href="/orders"
@@ -235,12 +248,12 @@ const socials = [
                     <div class="space-y-4 lg:col-span-1">
                         <Link href="/" class="flex items-center gap-2.5">
                             <span
-                                class="flex size-10 items-center justify-center rounded-full border border-gold/40 bg-primary text-primary-foreground"
+                                class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md bg-white"
                             >
-                                <Wine class="size-5 text-gold" :stroke-width="1.5" />
+                                <img src="/pb_store_logo.jpeg" alt="PB Store" class="size-full object-contain" />
                             </span>
                             <span class="font-display text-2xl font-semibold">
-                                Nectar<span class="text-gold">.</span>
+                                PB Store<span class="text-gold">.</span>
                             </span>
                         </Link>
                         <p class="text-sm text-muted-foreground">
@@ -250,7 +263,7 @@ const socials = [
                         <ul class="space-y-2 text-sm text-muted-foreground">
                             <li class="flex items-center gap-2">
                                 <Phone class="size-4 text-primary" />
-                                <a href="tel:+97714416789" class="hover:text-foreground">01-4416789</a>
+                                <a href="tel:+9779841307715" class="hover:text-foreground">9841307715</a>
                             </li>
                             <li class="flex items-center gap-2">
                                 <Mail class="size-4 text-primary" />
@@ -262,7 +275,7 @@ const socials = [
                             </li>
                             <li class="flex items-center gap-2">
                                 <MapPin class="size-4 text-primary" />
-                                Kathmandu, Nepal
+                                Imadol, Lalitpur
                             </li>
                         </ul>
                     </div>
@@ -296,7 +309,7 @@ const socials = [
                             <li v-if="!isAuthenticated"><Link href="/login" class="hover:text-foreground">Sign in</Link></li>
                             <li v-if="!isAuthenticated"><Link href="/register" class="hover:text-foreground">Create account</Link></li>
                             <li><Link href="/settings/profile" v-if="isAuthenticated" class="hover:text-foreground">Profile</Link></li>
-                            <li><a href="tel:+97714416789" class="hover:text-foreground">Help &amp; support</a></li>
+                            <li><a href="tel:+9779841307715" class="hover:text-foreground">Help &amp; support</a></li>
                         </ul>
                     </div>
 
@@ -318,9 +331,9 @@ const socials = [
                                     :key="social.label"
                                     :href="social.href"
                                     :aria-label="social.label"
-                                    class="flex size-9 items-center justify-center rounded-full border text-xs font-semibold text-muted-foreground transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground"
+                                    class="flex size-9 items-center justify-center rounded-full border text-muted-foreground transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground"
                                 >
-                                    {{ social.short }}
+                                    <component :is="social.icon" class="size-4" />
                                 </a>
                             </div>
                         </div>
@@ -330,7 +343,7 @@ const socials = [
                 <div
                     class="mt-10 flex flex-col items-center justify-between gap-3 border-t pt-6 text-xs text-muted-foreground sm:flex-row"
                 >
-                    <p>&copy; {{ year }} Nectar Online Store. All rights reserved.</p>
+                    <p>&copy; {{ year }} PB Store. All rights reserved.</p>
                     <p class="font-semibold tracking-wide text-primary uppercase">
                         You must be 21+ to purchase · Please drink responsibly
                     </p>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"  @class(['dark' => ($appearance ?? 'light') == 'dark'])>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"  @class(['dark' => ($appearance ?? 'dark') == 'dark'])>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,7 +7,7 @@
         {{-- Inline script to detect system dark mode preference and apply it immediately --}}
         <script>
             (function() {
-                const appearance = '{{ $appearance ?? "light" }}';
+                const appearance = '{{ $appearance ?? "dark" }}';
 
                 if (appearance === 'system') {
                     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -26,13 +26,12 @@
             }
 
             html.dark {
-                background-color: oklch(0.145 0 0);
+                background-color: hsl(345 18% 6%);
             }
         </style>
 
-        <link rel="icon" href="/favicon.ico" sizes="any">
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        <link rel="icon" href="/pb_store_logo.jpeg" type="image/jpeg">
+        <link rel="apple-touch-icon" href="/pb_store_logo.jpeg">
 
         {{-- Editorial display serif for the storefront --}}
         <link rel="preconnect" href="https://fonts.bunny.net">

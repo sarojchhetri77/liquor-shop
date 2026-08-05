@@ -234,7 +234,7 @@ const statusTone: Record<string, string> = {
                         </div>
                         <div class="h-2 overflow-hidden rounded-full bg-muted">
                             <div
-                                class="h-full rounded-full bg-gradient-to-r from-primary to-rose-500"
+                                class="h-full rounded-full bg-primary"
                                 :style="{ width: `${(cat.revenue / maxCategory) * 100}%` }"
                             ></div>
                         </div>
