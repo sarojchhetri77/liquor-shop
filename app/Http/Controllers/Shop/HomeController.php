@@ -20,15 +20,16 @@ class HomeController extends Controller
             'featured' => Product::active()
                 ->with(['images', 'category'])
                 ->orderByDesc('rating')
-                ->take(8)
+                ->take(12)
                 ->get(),
+            'featuredHasMore' => Product::active()->count() > 12,
             'discounted' => Product::active()
                 ->where('discount_percent', '>', 0)
                 ->with(['images', 'category'])
                 ->latest()
                 ->take(4)
                 ->get(),
-            'categories' => Category::withCount('products')->orderBy('name')->get(),
+            'categories' => Category::withCount('products')->has('products')->orderBy('name')->get(),
         ]);
     }
 }
