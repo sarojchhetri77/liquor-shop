@@ -107,7 +107,7 @@ class DashboardController extends Controller
                 $date = now()->subDays($i);
                 $periods[] = ['key' => $date->format('Y-m-d'), 'label' => $date->format('M j')];
             }
-            $groupExpr = "strftime('%Y-%m-%d', created_at)";
+            $groupExpr = "DATE_FORMAT(created_at, '%Y-%m-%d')";
             $from = now()->subDays($buckets - 1)->startOfDay();
         } else {
             $start = $since ?? ($this->earliestOrderDate()?->startOfMonth() ?? now()->startOfMonth());
@@ -118,7 +118,7 @@ class DashboardController extends Controller
                 $periods[] = ['key' => $cursor->format('Y-m'), 'label' => $cursor->format('M Y')];
                 $cursor = $cursor->addMonth();
             }
-            $groupExpr = "strftime('%Y-%m', created_at)";
+            $groupExpr = "DATE_FORMAT(created_at, '%Y-%m')";
             $from = $start;
         }
 

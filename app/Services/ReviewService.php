@@ -43,6 +43,7 @@ class ReviewService
     private function recalculateRating(Product $product): void
     {
         $aggregate = $product->reviews()
+            ->reorder()
             ->selectRaw('AVG(rating) as average, COUNT(*) as total')
             ->first();
 

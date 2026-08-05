@@ -34,6 +34,7 @@ class ReviewSeeder extends Seeder
             }
 
             $aggregate = $product->reviews()
+                ->reorder()
                 ->selectRaw('AVG(rating) as average, COUNT(*) as total')
                 ->first();
 
