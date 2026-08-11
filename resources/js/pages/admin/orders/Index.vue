@@ -16,6 +16,7 @@ import {
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import { formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
+import { show as orderShow } from '@/routes/admin/orders';
 import type { Order, Paginated } from '@/types/shop';
 
 const props = defineProps<{
@@ -162,7 +163,7 @@ function setStatus(order: Order, status: string): void {
                             v-for="order in orders.data"
                             :key="order.id"
                             class="cursor-pointer transition-colors hover:bg-muted/40"
-                            @click="router.visit(`/admin/orders/${order.id}`)"
+                            @click="router.visit(orderShow.url(order.id))"
                         >
                             <td class="px-5 py-3.5 font-medium">{{ order.order_number }}</td>
                             <td class="px-5 py-3.5">
@@ -184,7 +185,7 @@ function setStatus(order: Order, status: string): void {
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end" class="w-48">
                                         <DropdownMenuItem as-child>
-                                            <Link :href="`/admin/orders/${order.id}`" class="flex w-full items-center gap-2">
+                                            <Link :href="orderShow(order.id)" class="flex w-full items-center gap-2">
                                                 <Eye class="size-4" /> View details
                                             </Link>
                                         </DropdownMenuItem>

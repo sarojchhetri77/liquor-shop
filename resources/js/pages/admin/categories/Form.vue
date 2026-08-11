@@ -6,6 +6,7 @@ import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import AdminLayout from '@/layouts/AdminLayout.vue';
+import { index as adminCategories, update as updateCategory, store as storeCategory } from '@/routes/admin/categories';
 import type { Category } from '@/types/shop';
 
 const props = defineProps<{
@@ -35,8 +36,8 @@ function onFile(event: Event): void {
 
 function submit(): void {
     const url = isEdit.value
-        ? `/admin/categories/${props.category!.id}`
-        : '/admin/categories';
+        ? updateCategory.url(props.category!.id)
+        : storeCategory.url();
     form.post(url, { forceFormData: true });
 }
 </script>
@@ -45,7 +46,7 @@ function submit(): void {
     <Head :title="isEdit ? 'Edit category' : 'New category'" />
     <AdminLayout :title="isEdit ? 'Edit category' : 'New category'">
         <Link
-            href="/admin/categories"
+            :href="adminCategories()"
             class="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
         >
             <ArrowLeft class="size-4" /> Back to categories
@@ -100,7 +101,7 @@ function submit(): void {
                     {{ isEdit ? 'Save changes' : 'Create category' }}
                 </Button>
                 <Button as-child variant="ghost">
-                    <Link href="/admin/categories">Cancel</Link>
+                    <Link :href="adminCategories()">Cancel</Link>
                 </Button>
             </div>
         </form>

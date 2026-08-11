@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
@@ -31,12 +32,13 @@ test('staff can create a product with multiple images', function () {
     Storage::fake('public');
     $staff = User::factory()->staff()->create();
     $category = Category::factory()->create();
+    $brand = Brand::factory()->create(['name' => 'Sony']);
 
     $response = $this->actingAs($staff)->post(route('admin.products.store'), [
         'category_id' => $category->id,
         'name' => 'Wireless Headphones',
         'description' => 'Great sound',
-        'brand' => 'Sony',
+        'brand_id' => $brand->id,
         'price' => 199.99,
         'discount_percent' => 10,
         'stock' => 25,
@@ -52,6 +54,7 @@ test('staff can create a product with multiple images', function () {
     $product = Product::firstWhere('name', 'Wireless Headphones');
     expect($product)->not->toBeNull()
         ->and($product->slug)->toBe('wireless-headphones')
+        ->and($product->brand_id)->toBe($brand->id)
         ->and($product->images)->toHaveCount(2)
         ->and($product->images->where('is_primary', true))->toHaveCount(1);
 

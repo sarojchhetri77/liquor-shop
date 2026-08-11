@@ -25,7 +25,16 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Toaster } from '@/components/ui/sonner';
+import { asset } from '@/lib/asset';
 import { cn } from '@/lib/utils';
+import { home, logout as logoutRoute } from '@/routes';
+import { dashboard as adminDashboard } from '@/routes/admin';
+import { index as adminCategories } from '@/routes/admin/categories';
+import { index as adminOrders } from '@/routes/admin/orders';
+import { index as adminProducts } from '@/routes/admin/products';
+import { index as adminPromotions } from '@/routes/admin/promotions';
+import { index as adminStaff } from '@/routes/admin/staff';
+import { edit as profile } from '@/routes/profile';
 
 withDefaults(
     defineProps<{
@@ -46,12 +55,12 @@ type AdminNavItem = {
 };
 
 const navItems: AdminNavItem[] = [
-    { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-    { label: 'Products', href: '/admin/products', icon: Package },
-    { label: 'Categories', href: '/admin/categories', icon: Tags },
-    { label: 'Orders', href: '/admin/orders', icon: ShoppingBag },
-    { label: 'Promotions', href: '/admin/promotions', icon: Megaphone },
-    { label: 'Staff', href: '/admin/staff', icon: Users, adminOnly: true },
+    { label: 'Dashboard', href: adminDashboard.url(), icon: LayoutDashboard },
+    { label: 'Products', href: adminProducts.url(), icon: Package },
+    { label: 'Categories', href: adminCategories.url(), icon: Tags },
+    { label: 'Orders', href: adminOrders.url(), icon: ShoppingBag },
+    { label: 'Promotions', href: adminPromotions.url(), icon: Megaphone },
+    { label: 'Staff', href: adminStaff.url(), icon: Users, adminOnly: true },
 ];
 
 const visibleItems = computed(() =>
@@ -59,15 +68,15 @@ const visibleItems = computed(() =>
 );
 
 function isActive(href: string): boolean {
-    if (href === '/admin') {
-        return page.url === '/admin';
+    if (href === adminDashboard.url()) {
+        return page.url === href;
     }
 
     return page.url.startsWith(href);
 }
 
 function logout(): void {
-    router.post('/logout');
+    router.post(logoutRoute.url());
 }
 </script>
 
@@ -79,7 +88,7 @@ function logout(): void {
         >
             <div class="flex h-[68px] items-center gap-2.5 border-b px-6">
                 <span class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md bg-white">
-                    <img src="/pb_store_logo.jpeg" alt="PB Store" class="size-full object-contain" />
+                    <img :src="asset('pb_store_logo.jpeg')" alt="PB Store" class="size-full object-contain" />
                 </span>
                 <div class="leading-none">
                     <p class="font-display text-xl font-semibold text-foreground">PB Store</p>
@@ -113,7 +122,7 @@ function logout(): void {
 
             <div class="space-y-1 border-t p-4">
                 <Link
-                    href="/"
+                    :href="home()"
                     class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >
                     <Store class="size-5" /> View store
@@ -141,7 +150,7 @@ function logout(): void {
                     <SheetContent side="left" class="w-72 bg-card p-0">
                         <div class="flex h-[68px] items-center gap-2.5 border-b px-6">
                             <span class="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-md bg-white">
-                                <img src="/pb_store_logo.jpeg" alt="PB Store" class="size-full object-contain" />
+                                <img :src="asset('pb_store_logo.jpeg')" alt="PB Store" class="size-full object-contain" />
                             </span>
                             <div class="leading-none">
                                 <p class="font-display text-lg font-semibold text-foreground">PB Store</p>
@@ -199,12 +208,12 @@ function logout(): void {
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem as-child>
-                            <Link href="/settings/profile" class="flex w-full items-center gap-2">
+                            <Link :href="profile()" class="flex w-full items-center gap-2">
                                 <UserIcon class="size-4" /> Account settings
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem as-child>
-                            <Link href="/" class="flex w-full items-center gap-2">
+                            <Link :href="home()" class="flex w-full items-center gap-2">
                                 <Store class="size-4" /> View store
                             </Link>
                         </DropdownMenuItem>

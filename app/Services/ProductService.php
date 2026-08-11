@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -22,7 +23,7 @@ class ProductService
     public function paginateForAdmin(array $filters, int $perPage = 12): LengthAwarePaginator
     {
         return $this->filteredQuery($filters)
-            ->with(['category', 'images'])
+            ->with(['category', 'brand', 'images'])
             ->latest()
             ->paginate($perPage)
             ->withQueryString();
@@ -38,7 +39,7 @@ class ProductService
     {
         $query = $this->filteredQuery($filters)
             ->active()
-            ->with(['category', 'images']);
+            ->with(['category', 'brand', 'images']);
 
         match ($filters['sort'] ?? null) {
             'price_low' => $query->orderBy('price'),
@@ -51,7 +52,23 @@ class ProductService
     }
 
     /**
-     * Build a query filtered by product name and category.
+     * Active products matching a search term, used by the storefront's
+     * as-you-type search suggestions.
+     *
+     * @return Collection<int, Product>
+     */
+    public function suggest(string $search, int $limit = 6): Collection
+    {
+        return $this->filteredQuery(['search' => $search])
+            ->active()
+            ->with(['category', 'brand', 'images'])
+            ->orderByDesc('rating')
+            ->take($limit)
+            ->get();
+    }
+
+    /**
+     * Build a query filtered by product name / brand and category.
      *
      * @param  array{search?: string|null, category_id?: int|string|null}  $filters
      * @return Builder<Product>
@@ -61,7 +78,11 @@ class ProductService
         return Product::query()
             ->when(
                 $filters['search'] ?? null,
-                fn ($query, $search) => $query->where('name', 'like', "%{$search}%")
+                fn (Builder $query, string $search) => $query->where(
+                    fn (Builder $query) => $query
+                        ->where('name', 'like', "%{$search}%")
+                        ->orWhereHas('brand', fn (Builder $brand) => $brand->where('name', 'like', "%{$search}%"))
+                )
             )
             ->when(
                 $filters['category_id'] ?? null,
@@ -70,17 +91,17 @@ class ProductService
     }
 
     /**
-     * @param  array{category_id: int, name: string, description?: string|null, brand?: string|null, price: numeric, discount_percent?: int|null, discount_starts_at?: string|null, discount_ends_at?: string|null, stock?: int|null, is_active?: bool, images?: array<int, UploadedFile>|null}  $data
+     * @param  array{category_id: int, brand_id?: int|null, name: string, description?: string|null, price: numeric, discount_percent?: int|null, discount_starts_at?: string|null, discount_ends_at?: string|null, stock?: int|null, is_active?: bool, images?: array<int, UploadedFile>|null}  $data
      */
     public function create(array $data): Product
     {
         return DB::transaction(function () use ($data): Product {
             $product = Product::create([
                 'category_id' => $data['category_id'],
+                'brand_id' => $data['brand_id'] ?? null,
                 'name' => $data['name'],
                 'slug' => $this->uniqueSlug($data['name']),
                 'description' => $data['description'] ?? null,
-                'brand' => $data['brand'] ?? null,
                 'price' => $data['price'],
                 'discount_percent' => $data['discount_percent'] ?? 0,
                 'discount_starts_at' => $data['discount_starts_at'] ?? null,
@@ -96,16 +117,16 @@ class ProductService
     }
 
     /**
-     * @param  array{category_id: int, name: string, description?: string|null, brand?: string|null, price: numeric, discount_percent?: int|null, discount_starts_at?: string|null, discount_ends_at?: string|null, stock?: int|null, is_active?: bool, images?: array<int, UploadedFile>|null, removed_image_ids?: array<int, int>|null}  $data
+     * @param  array{category_id: int, brand_id?: int|null, name: string, description?: string|null, price: numeric, discount_percent?: int|null, discount_starts_at?: string|null, discount_ends_at?: string|null, stock?: int|null, is_active?: bool, images?: array<int, UploadedFile>|null, removed_image_ids?: array<int, int>|null}  $data
      */
     public function update(Product $product, array $data): Product
     {
         return DB::transaction(function () use ($product, $data): Product {
             $product->update([
                 'category_id' => $data['category_id'],
+                'brand_id' => $data['brand_id'] ?? null,
                 'name' => $data['name'],
                 'description' => $data['description'] ?? null,
-                'brand' => $data['brand'] ?? null,
                 'price' => $data['price'],
                 'discount_percent' => $data['discount_percent'] ?? 0,
                 'discount_starts_at' => $data['discount_starts_at'] ?? null,

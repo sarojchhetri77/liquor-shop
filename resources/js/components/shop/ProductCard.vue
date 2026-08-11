@@ -6,6 +6,9 @@ import BottleThumb from '@/components/shop/BottleThumb.vue';
 import StarRating from '@/components/shop/StarRating.vue';
 import { Spinner } from '@/components/ui/spinner';
 import { formatMoney } from '@/lib/format';
+import { login } from '@/routes';
+import { store as addToCartRoute } from '@/routes/shop/cart';
+import { show as productShow } from '@/routes/shop/products';
 import type { Product } from '@/types/shop';
 
 const props = defineProps<{
@@ -32,13 +35,13 @@ function addToCart(): void {
     // Guests must sign in first; remember which product they wanted so it can
     // be added to their cart automatically once they authenticate.
     if (!props.canBuy) {
-        router.get('/login', { add: props.product.id });
+        router.get(login.url(), { add: props.product.id });
 
         return;
     }
 
     router.post(
-        `/cart/${props.product.id}`,
+        addToCartRoute.url(props.product.id),
         { quantity: 1 },
         {
             preserveScroll: true,
@@ -65,7 +68,7 @@ function addToCart(): void {
         class="group relative flex flex-col overflow-hidden rounded-2xl border bg-card transition-all duration-300 hover:-translate-y-1 hover:border-foreground/25 hover:shadow-2xl"
     >
         <Link
-            :href="`/products/${product.slug}`"
+            :href="productShow(product.slug)"
             class="relative block aspect-[4/5] overflow-hidden bg-secondary/50"
         >
             <img
@@ -111,10 +114,10 @@ function addToCart(): void {
                 v-if="product.brand"
                 class="mb-1 text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase"
             >
-                {{ product.brand }}
+                {{ product.brand.name }}
             </p>
             <Link
-                :href="`/products/${product.slug}`"
+                :href="productShow(product.slug)"
                 class="font-display line-clamp-2 text-lg leading-snug font-medium transition-colors group-hover:text-foreground"
             >
                 {{ product.name }}

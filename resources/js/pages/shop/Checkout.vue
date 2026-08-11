@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import ShopLayout from '@/layouts/ShopLayout.vue';
 import { formatMoney } from '@/lib/format';
+import { store as placeOrder } from '@/routes/shop/checkout';
 
 type CheckoutItem = {
     id: number;
@@ -32,7 +33,7 @@ const form = useForm({
 });
 
 function submit(): void {
-    form.post('/checkout');
+    form.post(placeOrder.url());
 }
 </script>
 

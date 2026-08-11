@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Database\Seeder;
@@ -36,6 +37,15 @@ class ProductSeeder extends Seeder
             ],
         ];
 
+        $brands = collect($catalog)
+            ->flatten(1)
+            ->pluck('brand')
+            ->unique()
+            ->mapWithKeys(fn (string $name): array => [$name => Brand::firstOrCreate(
+                ['name' => $name],
+                ['slug' => Str::slug($name)],
+            )]);
+
         foreach ($catalog as $categoryName => $items) {
             $category = Category::where('name', $categoryName)->firstOrFail();
 
@@ -44,7 +54,7 @@ class ProductSeeder extends Seeder
                     'category_id' => $category->id,
                     'name' => $item['name'],
                     'slug' => Str::slug($item['name']).'-'.fake()->unique()->randomNumber(5),
-                    'brand' => $item['brand'],
+                    'brand_id' => $brands->get($item['brand'])?->id,
                     'price' => $item['price'],
                     'discount_percent' => fake()->randomElement([0, 0, 5, 10, 15]),
                     'stock' => fake()->numberBetween(0, 120),

@@ -48,6 +48,9 @@ class HandleInertiaRequests extends Middleware
                 'isAdmin' => $user instanceof User && $user->isAdmin(),
             ],
             'cartCount' => $user instanceof User ? (int) $user->cartItems()->sum('quantity') : 0,
+            // Path the app is mounted on ('' at the domain root, '/liquor-shop/public'
+            // when served from a sub-directory) so the client can build working URLs.
+            'basePath' => rtrim(parse_url(url('/'), PHP_URL_PATH) ?: '', '/'),
             // Lightweight category list for the storefront header/footer navigation.
             'navCategories' => fn () => Category::orderBy('name')->get(['id', 'name']),
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',

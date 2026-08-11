@@ -5,6 +5,7 @@ import Pagination from '@/components/shop/Pagination.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/AdminLayout.vue';
+import { create as createPromotion, destroy as destroyPromotion, edit as editPromotion } from '@/routes/admin/promotions';
 import type { Paginated, Promotion } from '@/types/shop';
 
 defineProps<{
@@ -13,7 +14,7 @@ defineProps<{
 
 function destroy(promotion: Promotion): void {
     if (confirm(`Delete "${promotion.title}"?`)) {
-        router.delete(`/admin/promotions/${promotion.id}`, {
+        router.delete(destroyPromotion.url(promotion.id), {
             preserveScroll: true,
         });
     }
@@ -29,7 +30,7 @@ function destroy(promotion: Promotion): void {
                 storefront homepage.
             </p>
             <Button as-child>
-                <Link href="/admin/promotions/create" class="gap-1.5"
+                <Link :href="createPromotion()" class="gap-1.5"
                     ><Plus class="size-4" /> New promotion</Link
                 >
             </Button>
@@ -62,7 +63,7 @@ function destroy(promotion: Promotion): void {
                     </div>
                     <div class="flex gap-1">
                         <Button as-child size="icon" variant="ghost">
-                            <Link :href="`/admin/promotions/${promotion.id}/edit`"><Pencil class="size-4" /></Link>
+                            <Link :href="editPromotion(promotion.id)"><Pencil class="size-4" /></Link>
                         </Button>
                         <Button size="icon" variant="ghost" class="text-red-600 hover:text-red-600" @click="destroy(promotion)">
                             <Trash2 class="size-4" />

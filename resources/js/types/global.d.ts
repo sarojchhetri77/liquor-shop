@@ -19,6 +19,7 @@ declare module '@inertiajs/core' {
             name: string;
             auth: Auth;
             cartCount: number;
+            basePath: string;
             navCategories: { id: number; name: string }[];
             sidebarOpen: boolean;
             [key: string]: unknown;

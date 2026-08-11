@@ -18,14 +18,14 @@ class HomeController extends Controller
         return Inertia::render('shop/Home', [
             'promotion' => $this->promotions->activePopup(),
             'featured' => Product::active()
-                ->with(['images', 'category'])
+                ->with(['images', 'category', 'brand'])
                 ->orderByDesc('rating')
                 ->take(12)
                 ->get(),
             'featuredHasMore' => Product::active()->count() > 12,
             'discounted' => Product::active()
                 ->where('discount_percent', '>', 0)
-                ->with(['images', 'category'])
+                ->with(['images', 'category', 'brand'])
                 ->latest()
                 ->take(4)
                 ->get(),

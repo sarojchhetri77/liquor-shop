@@ -5,6 +5,7 @@ import { computed, reactive } from 'vue';
 import Pagination from '@/components/shop/Pagination.vue';
 import ProductCard from '@/components/shop/ProductCard.vue';
 import ShopLayout from '@/layouts/ShopLayout.vue';
+import { index as productsRoute } from '@/routes/shop/products';
 import type { Paginated, Product } from '@/types/shop';
 
 const props = defineProps<{
@@ -24,7 +25,7 @@ const filters = reactive({
 
 function applyFilters(): void {
     router.get(
-        '/products',
+        productsRoute.url(),
         {
             search: filters.search || undefined,
             category_id: filters.category_id || undefined,

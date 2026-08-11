@@ -4,6 +4,9 @@ import { Minus, Plus, ShoppingBag, Trash2 } from '@lucide/vue';
 import { Button } from '@/components/ui/button';
 import ShopLayout from '@/layouts/ShopLayout.vue';
 import { formatMoney } from '@/lib/format';
+import { destroy as removeItem, update as updateItem } from '@/routes/shop/cart';
+import { create as checkout } from '@/routes/shop/checkout';
+import { index as products, show as productShow } from '@/routes/shop/products';
 
 type CartItem = {
     id: number;
@@ -30,11 +33,11 @@ function updateQuantity(item: CartItem, quantity: number): void {
         return;
     }
 
-    router.patch(`/cart/${item.id}`, { quantity }, { preserveScroll: true });
+    router.patch(updateItem.url(item.id), { quantity }, { preserveScroll: true });
 }
 
 function remove(item: CartItem): void {
-    router.delete(`/cart/${item.id}`, { preserveScroll: true });
+    router.delete(removeItem.url(item.id), { preserveScroll: true });
 }
 </script>
 
@@ -52,7 +55,7 @@ function remove(item: CartItem): void {
                         class="flex gap-4 rounded-xl border bg-card p-4"
                     >
                         <Link
-                            :href="`/products/${item.product.slug}`"
+                            :href="productShow(item.product.slug)"
                             class="size-24 shrink-0 overflow-hidden rounded-lg border bg-muted"
                         >
                             <img
@@ -66,7 +69,7 @@ function remove(item: CartItem): void {
                         <div class="flex flex-1 flex-col">
                             <div class="flex items-start justify-between gap-2">
                                 <Link
-                                    :href="`/products/${item.product.slug}`"
+                                    :href="productShow(item.product.slug)"
                                     class="font-medium hover:underline"
                                     >{{ item.product.name }}</Link
                                 >
@@ -145,10 +148,10 @@ function remove(item: CartItem): void {
                         </div>
                     </dl>
                     <Button as-child class="mt-4 w-full">
-                        <Link href="/checkout">Proceed to checkout</Link>
+                        <Link :href="checkout()">Proceed to checkout</Link>
                     </Button>
                     <Link
-                        href="/products"
+                        :href="products()"
                         class="mt-2 block text-center text-sm text-muted-foreground hover:text-foreground"
                         >Continue shopping</Link
                     >
@@ -167,7 +170,7 @@ function remove(item: CartItem): void {
                     </p>
                 </div>
                 <Button as-child>
-                    <Link href="/products">Start shopping</Link>
+                    <Link :href="products()">Start shopping</Link>
                 </Button>
             </div>
         </div>

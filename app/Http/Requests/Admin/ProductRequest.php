@@ -20,7 +20,7 @@ class ProductRequest extends FormRequest
             'category_id' => ['required', 'exists:categories,id'],
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:5000'],
-            'brand' => ['nullable', 'string', 'max:255'],
+            'brand_id' => ['nullable', 'exists:brands,id'],
             'price' => ['required', 'numeric', 'min:0', 'max:9999999'],
             'discount_percent' => ['nullable', 'integer', 'min:0', 'max:100'],
             'discount_starts_at' => ['nullable', 'date'],
@@ -38,6 +38,7 @@ class ProductRequest extends FormRequest
     {
         $this->merge([
             'is_active' => $this->boolean('is_active'),
+            'brand_id' => $this->input('brand_id') ?: null,
             'discount_starts_at' => $this->input('discount_starts_at') ?: null,
             'discount_ends_at' => $this->input('discount_ends_at') ?: null,
         ]);

@@ -5,6 +5,7 @@ import { computed } from 'vue';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import { formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
+import { index as adminOrders, show as orderShow } from '@/routes/admin/orders';
 
 type RecentOrder = {
     id: number;
@@ -247,7 +248,7 @@ const statusTone: Record<string, string> = {
             <div class="overflow-hidden rounded-2xl border bg-card shadow-sm lg:col-span-2">
                 <div class="flex items-center justify-between border-b px-5 py-4">
                     <h2 class="font-display text-lg font-semibold">Recent orders</h2>
-                    <Link href="/admin/orders" class="flex items-center gap-1 text-xs font-semibold tracking-[0.1em] text-primary uppercase hover:underline">
+                    <Link :href="adminOrders()" class="flex items-center gap-1 text-xs font-semibold tracking-[0.1em] text-primary uppercase hover:underline">
                         View all <ArrowRight class="size-3.5" />
                     </Link>
                 </div>
@@ -267,7 +268,7 @@ const statusTone: Record<string, string> = {
                                 v-for="order in recentOrders"
                                 :key="order.id"
                                 class="cursor-pointer transition-colors hover:bg-muted/40"
-                                @click="$inertia.visit(`/admin/orders/${order.id}`)"
+                                @click="$inertia.visit(orderShow.url(order.id))"
                             >
                                 <td class="px-5 py-3 font-medium">{{ order.order_number }}</td>
                                 <td class="px-5 py-3">

@@ -2,17 +2,20 @@
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ArrowLeft, ImagePlus, X } from '@lucide/vue';
 import { computed, ref } from 'vue';
+import BrandSelect from '@/components/BrandSelect.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import { formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
-import type { Product } from '@/types/shop';
+import { index as adminProducts, store as storeProduct, update as updateProduct } from '@/routes/admin/products';
+import type { Brand, Product } from '@/types/shop';
 
 const props = defineProps<{
     product?: Product;
     categories: { id: number; name: string }[];
+    brands: Brand[];
 }>();
 
 const isEdit = computed(() => !!props.product);
@@ -31,7 +34,7 @@ function toDateTimeLocal(value: string | null | undefined): string {
 const form = useForm({
     category_id: props.product?.category_id ?? props.categories[0]?.id ?? '',
     name: props.product?.name ?? '',
-    brand: props.product?.brand ?? '',
+    brand_id: props.product?.brand_id ?? '',
     description: props.product?.description ?? '',
     price: props.product?.price ?? '',
     discount_percent: props.product?.discount_percent ?? 0,
@@ -72,7 +75,7 @@ function removeExisting(id: number): void {
 }
 
 function submit(): void {
-    const url = isEdit.value ? `/admin/products/${props.product!.id}` : '/admin/products';
+    const url = isEdit.value ? updateProduct.url(props.product!.id) : storeProduct.url();
     form.post(url, { forceFormData: true });
 }
 </script>
@@ -83,13 +86,13 @@ function submit(): void {
         <!-- Sticky action header -->
         <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
             <Link
-                href="/admin/products"
+                :href="adminProducts()"
                 class="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
                 <ArrowLeft class="size-4" /> Back to products
             </Link>
             <div class="flex items-center gap-2">
-                <Button as-child variant="ghost"><Link href="/admin/products">Cancel</Link></Button>
+                <Button as-child variant="ghost"><Link :href="adminProducts()">Cancel</Link></Button>
                 <Button type="submit" form="product-form" :disabled="form.processing" class="px-6">
                     {{ isEdit ? 'Save changes' : 'Create product' }}
                 </Button>
@@ -111,8 +114,8 @@ function submit(): void {
                         <div class="grid gap-5 sm:grid-cols-2">
                             <div class="grid gap-1.5">
                                 <Label for="brand">Brand</Label>
-                                <input id="brand" v-model="form.brand" :class="inputClass" placeholder="e.g. Jack Daniel's" />
-                                <InputError :message="form.errors.brand" />
+                                <BrandSelect v-model="form.brand_id" :brands="brands" />
+                                <InputError :message="form.errors.brand_id" />
                             </div>
                             <div class="grid gap-1.5">
                                 <Label for="category">Category</Label>
@@ -241,10 +244,19 @@ function submit(): void {
                                 type="button"
                                 role="switch"
                                 :aria-checked="form.is_active"
-                                :class="cn('relative h-6 w-11 shrink-0 rounded-full transition-colors', form.is_active ? 'bg-primary' : 'bg-muted-foreground/30')"
+                                :class="cn(
+                                    'inline-flex h-6 w-11 shrink-0 items-center rounded-full p-0.5 transition-colors',
+                                    form.is_active ? 'bg-primary' : 'bg-muted-foreground/30',
+                                )"
                                 @click="form.is_active = !form.is_active"
                             >
-                                <span :class="cn('absolute top-0.5 size-5 rounded-full bg-white shadow transition-transform', form.is_active ? 'translate-x-[22px]' : 'translate-x-0.5')"></span>
+                                <!-- The thumb tracks the theme's background so it stays visible on both track colours. -->
+                                <span
+                                    :class="cn(
+                                        'size-5 rounded-full bg-background shadow transition-transform',
+                                        form.is_active ? 'translate-x-5' : 'translate-x-0',
+                                    )"
+                                ></span>
                             </button>
                         </div>
                     </div>

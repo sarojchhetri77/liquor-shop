@@ -6,6 +6,7 @@ import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import AdminLayout from '@/layouts/AdminLayout.vue';
+import { index as adminPromotions, store as storePromotion, update as updatePromotion } from '@/routes/admin/promotions';
 import type { Promotion } from '@/types/shop';
 
 const props = defineProps<{
@@ -35,8 +36,8 @@ function onFile(event: Event): void {
 
 function submit(): void {
     const url = isEdit.value
-        ? `/admin/promotions/${props.promotion!.id}`
-        : '/admin/promotions';
+        ? updatePromotion.url(props.promotion!.id)
+        : storePromotion.url();
     form.post(url, { forceFormData: true });
 }
 </script>
@@ -45,7 +46,7 @@ function submit(): void {
     <Head :title="isEdit ? 'Edit promotion' : 'New promotion'" />
     <AdminLayout :title="isEdit ? 'Edit promotion' : 'New promotion'">
         <Link
-            href="/admin/promotions"
+            :href="adminPromotions()"
             class="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
         >
             <ArrowLeft class="size-4" /> Back to promotions
@@ -81,7 +82,7 @@ function submit(): void {
                     <Button type="submit" :disabled="form.processing">
                         {{ isEdit ? 'Save changes' : 'Create promotion' }}
                     </Button>
-                    <Button as-child variant="ghost"><Link href="/admin/promotions">Cancel</Link></Button>
+                    <Button as-child variant="ghost"><Link :href="adminPromotions()">Cancel</Link></Button>
                 </div>
             </div>
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\DiscountRequest;
 use App\Http\Requests\Admin\ProductRequest;
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Services\ProductService;
@@ -36,13 +37,14 @@ class ProductController extends Controller
     {
         return Inertia::render('admin/products/Form', [
             'categories' => Category::orderBy('name')->get(['id', 'name']),
+            'brands' => Brand::orderBy('name')->get(['id', 'name']),
         ]);
     }
 
     public function show(Product $product): Response
     {
         return Inertia::render('admin/products/Show', [
-            'product' => $product->load(['images', 'category', 'reviews.user']),
+            'product' => $product->load(['images', 'category', 'brand', 'reviews.user']),
         ]);
     }
 
@@ -57,8 +59,9 @@ class ProductController extends Controller
     public function edit(Product $product): Response
     {
         return Inertia::render('admin/products/Form', [
-            'product' => $product->load('images'),
+            'product' => $product->load(['images', 'brand']),
             'categories' => Category::orderBy('name')->get(['id', 'name']),
+            'brands' => Brand::orderBy('name')->get(['id', 'name']),
         ]);
     }
 

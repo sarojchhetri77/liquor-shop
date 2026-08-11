@@ -8,17 +8,17 @@ import {
     MapPin,
     Package,
     Phone,
-    Search,
     ShoppingBag,
     ShoppingCart,
     Truck,
     User as UserIcon,
 } from '@lucide/vue';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import AppearanceToggle from '@/components/AppearanceToggle.vue';
 import FacebookIcon from '@/components/icons/FacebookIcon.vue';
 import InstagramIcon from '@/components/icons/InstagramIcon.vue';
 import TikTokIcon from '@/components/icons/TikTokIcon.vue';
+import SearchSuggestions from '@/components/shop/SearchSuggestions.vue';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -28,6 +28,13 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Toaster } from '@/components/ui/sonner';
+import { asset } from '@/lib/asset';
+import { dashboard, home, login, logout as logoutRoute, register } from '@/routes';
+import { dashboard as adminDashboard } from '@/routes/admin';
+import { edit as profile } from '@/routes/profile';
+import { index as cart } from '@/routes/shop/cart';
+import { index as orders } from '@/routes/shop/orders';
+import { index as products } from '@/routes/shop/products';
 
 const page = usePage();
 
@@ -37,27 +44,13 @@ const isAuthenticated = computed(() => !!auth.value.user);
 const categories = computed(() => page.props.navCategories ?? []);
 const year = new Date().getFullYear();
 
-const search = ref(
-    new URLSearchParams(
-        typeof window !== 'undefined' ? window.location.search : '',
-    ).get('search') ?? '',
-);
-
-function submitSearch(): void {
-    router.get(
-        '/products',
-        { search: search.value || undefined },
-        { preserveState: true },
-    );
-}
-
 function logout(): void {
-    router.post('/logout');
+    router.post(logoutRoute.url());
 }
 
 const navLinks = [
-    { label: 'Home', href: '/' },
-    { label: 'Shop', href: '/products' },
+    { label: 'Home', href: home.url() },
+    { label: 'Shop', href: products.url() },
 ];
 
 const socials = [
@@ -95,11 +88,11 @@ const socials = [
             <div
                 class="mx-auto flex h-[68px] w-full max-w-7xl items-center gap-5 px-4 sm:px-6"
             >
-                <Link href="/" class="flex items-center gap-2.5">
+                <Link :href="home()" class="flex items-center gap-2.5">
                     <span
                         class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md bg-white"
                     >
-                        <img src="/pb_store_logo.jpeg" alt="PB Store" class="size-full object-contain" />
+                        <img :src="asset('pb_store_logo.jpeg')" alt="PB Store" class="size-full object-contain" />
                     </span>
                     <span class="hidden flex-col leading-none sm:flex">
                         <span class="font-display text-2xl font-semibold tracking-tight">
@@ -122,25 +115,12 @@ const socials = [
                     </Link>
                 </nav>
 
-                <form
-                    class="relative ml-auto hidden max-w-xs flex-1 sm:block"
-                    @submit.prevent="submitSearch"
-                >
-                    <Search
-                        class="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-                    />
-                    <input
-                        v-model="search"
-                        type="search"
-                        placeholder="Search the cellar…"
-                        class="h-10 w-full rounded-full border bg-card pr-4 pl-9 text-sm transition-colors outline-none focus:border-primary"
-                    />
-                </form>
+                <SearchSuggestions class="ml-auto hidden max-w-xs flex-1 sm:block" />
 
                 <div class="ml-auto flex items-center gap-1 sm:ml-0">
                     <AppearanceToggle />
                     <Link
-                        href="/cart"
+                        :href="cart()"
                         class="relative flex size-10 items-center justify-center rounded-full text-foreground transition-colors hover:bg-muted"
                         aria-label="Cart"
                     >
@@ -175,7 +155,7 @@ const socials = [
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem as-child>
                                     <Link
-                                        href="/dashboard"
+                                        :href="dashboard()"
                                         class="flex w-full items-center gap-2"
                                     >
                                         <LayoutDashboard class="size-4" /> Dashboard
@@ -183,7 +163,7 @@ const socials = [
                                 </DropdownMenuItem>
                                 <DropdownMenuItem as-child>
                                     <Link
-                                        href="/orders"
+                                        :href="orders()"
                                         class="flex w-full items-center gap-2"
                                     >
                                         <Package class="size-4" /> My Orders
@@ -191,7 +171,7 @@ const socials = [
                                 </DropdownMenuItem>
                                 <DropdownMenuItem as-child>
                                     <Link
-                                        href="/settings/profile"
+                                        :href="profile()"
                                         class="flex w-full items-center gap-2"
                                     >
                                         <UserIcon class="size-4" /> Account
@@ -202,7 +182,7 @@ const socials = [
                                     as-child
                                 >
                                     <Link
-                                        href="/admin"
+                                        :href="adminDashboard()"
                                         class="flex w-full items-center gap-2"
                                     >
                                         <ShoppingBag class="size-4" /> Admin
@@ -221,13 +201,13 @@ const socials = [
                     </template>
                     <template v-else>
                         <Link
-                            href="/login"
+                            :href="login()"
                             class="rounded-md px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
                         >
                             Log in
                         </Link>
                         <Link
-                            href="/register"
+                            :href="register()"
                             class="hidden rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:inline-block"
                         >
                             Sign up
@@ -246,11 +226,11 @@ const socials = [
                 <div class="grid gap-10 lg:grid-cols-4 lg:gap-8">
                     <!-- Brand + contact -->
                     <div class="space-y-4 lg:col-span-1">
-                        <Link href="/" class="flex items-center gap-2.5">
+                        <Link :href="home()" class="flex items-center gap-2.5">
                             <span
                                 class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md bg-white"
                             >
-                                <img src="/pb_store_logo.jpeg" alt="PB Store" class="size-full object-contain" />
+                                <img :src="asset('pb_store_logo.jpeg')" alt="PB Store" class="size-full object-contain" />
                             </span>
                             <span class="font-display text-2xl font-semibold">
                                 PB Store<span class="text-gold">.</span>
@@ -286,14 +266,14 @@ const socials = [
                         <ul class="space-y-2 text-sm text-muted-foreground">
                             <li v-for="category in categories" :key="category.id">
                                 <Link
-                                    :href="`/products?category_id=${category.id}`"
+                                    :href="products({ query: { category_id: category.id } })"
                                     class="transition-colors hover:text-foreground"
                                 >
                                     {{ category.name }}
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/products" class="font-medium text-primary hover:underline">
+                                <Link :href="products()" class="font-medium text-primary hover:underline">
                                     View all
                                 </Link>
                             </li>
@@ -304,11 +284,11 @@ const socials = [
                     <div>
                         <h3 class="mb-4 text-sm font-semibold tracking-wide uppercase">My account</h3>
                         <ul class="space-y-2 text-sm text-muted-foreground">
-                            <li><Link href="/orders" class="hover:text-foreground">My orders</Link></li>
-                            <li><Link href="/cart" class="hover:text-foreground">My cart</Link></li>
-                            <li v-if="!isAuthenticated"><Link href="/login" class="hover:text-foreground">Sign in</Link></li>
-                            <li v-if="!isAuthenticated"><Link href="/register" class="hover:text-foreground">Create account</Link></li>
-                            <li><Link href="/settings/profile" v-if="isAuthenticated" class="hover:text-foreground">Profile</Link></li>
+                            <li><Link :href="orders()" class="hover:text-foreground">My orders</Link></li>
+                            <li><Link :href="cart()" class="hover:text-foreground">My cart</Link></li>
+                            <li v-if="!isAuthenticated"><Link :href="login()" class="hover:text-foreground">Sign in</Link></li>
+                            <li v-if="!isAuthenticated"><Link :href="register()" class="hover:text-foreground">Create account</Link></li>
+                            <li><Link :href="profile()" v-if="isAuthenticated" class="hover:text-foreground">Profile</Link></li>
                             <li><a href="tel:+9779841307715" class="hover:text-foreground">Help &amp; support</a></li>
                         </ul>
                     </div>

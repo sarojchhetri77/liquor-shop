@@ -8,6 +8,8 @@ import PromoModal from '@/components/shop/PromoModal.vue';
 import { Button } from '@/components/ui/button';
 import { vReveal } from '@/directives/reveal';
 import ShopLayout from '@/layouts/ShopLayout.vue';
+import { asset } from '@/lib/asset';
+import { index as products } from '@/routes/shop/products';
 import type { Category, Product } from '@/types/shop';
 
 defineProps<{
@@ -47,7 +49,7 @@ function categoryIcon(name: string): LucideIcon {
         <!-- Hero — full-bleed cinematic -->
         <section class="relative isolate flex min-h-[90vh] items-center overflow-hidden">
             <img
-                src="/images/seed/hero-wide.jpg"
+                :src="asset('images/seed/hero-wide.jpg')"
                 alt="A curated wall of fine spirits"
                 class="animate-kenburns absolute inset-0 -z-20 h-full w-full object-cover"
             />
@@ -70,12 +72,12 @@ function categoryIcon(name: string): LucideIcon {
                     </p>
                     <div class="mt-10 flex flex-wrap items-center gap-4">
                         <Button as-child size="lg" class="rounded-full px-8 shadow-lg">
-                            <Link href="/products" class="gap-2">
+                            <Link :href="products()" class="gap-2">
                                 Explore the cellar <ArrowRight class="size-4" />
                             </Link>
                         </Button>
                         <Link
-                            href="/products?sort=rating"
+                            :href="products({ query: { sort: 'rating' } })"
                             class="inline-flex items-center rounded-full border border-white/30 px-7 py-3 text-sm font-semibold tracking-[0.14em] text-white uppercase backdrop-blur-sm transition-colors hover:bg-white/10"
                         >
                             Top rated
@@ -109,7 +111,7 @@ function categoryIcon(name: string): LucideIcon {
                     <h2 class="font-display text-3xl font-semibold sm:text-4xl">Shop by category</h2>
                 </div>
                 <Link
-                    href="/products"
+                    :href="products()"
                     class="hidden text-sm font-semibold uppercase tracking-[0.14em] text-primary underline-offset-8 hover:underline sm:block"
                 >
                     View all
@@ -120,7 +122,7 @@ function categoryIcon(name: string): LucideIcon {
                     v-for="(category, i) in categories"
                     :key="category.id"
                     v-reveal="{ delay: i * 60 }"
-                    :href="`/products?category_id=${category.id}`"
+                    :href="products({ query: { category_id: category.id } })"
                     class="group flex flex-col items-center gap-4 rounded-2xl border bg-card p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:border-foreground/25 hover:shadow-xl"
                 >
                     <span
@@ -158,7 +160,7 @@ function categoryIcon(name: string): LucideIcon {
                     <p class="text-muted-foreground">Order before 8 PM for same-day dispatch. No advance payment required.</p>
                 </div>
                 <Button as-child size="lg" class="rounded-full px-7">
-                    <Link href="/products">Start your order</Link>
+                    <Link :href="products()">Start your order</Link>
                 </Button>
             </div>
         </section>
@@ -170,7 +172,7 @@ function categoryIcon(name: string): LucideIcon {
                     <p class="eyebrow mb-2">Limited time</p>
                     <h2 class="font-display text-3xl font-semibold sm:text-4xl">This week's offers</h2>
                 </div>
-                <Link href="/products" class="flex items-center gap-1 text-sm font-semibold uppercase tracking-[0.14em] text-primary hover:underline">
+                <Link :href="products()" class="flex items-center gap-1 text-sm font-semibold uppercase tracking-[0.14em] text-primary hover:underline">
                     All offers <ArrowRight class="size-4" />
                 </Link>
             </div>
@@ -204,7 +206,7 @@ function categoryIcon(name: string): LucideIcon {
 
                 <div v-if="featuredHasMore" class="mt-10 text-center">
                     <Button as-child size="lg" variant="outline" class="rounded-full px-8">
-                        <Link href="/products" class="gap-2">
+                        <Link :href="products()" class="gap-2">
                             View more products <ArrowRight class="size-4" />
                         </Link>
                     </Button>

@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import { formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
+import { index as adminOrders, status as orderStatus } from '@/routes/admin/orders';
 import type { Order } from '@/types/shop';
 
 const props = defineProps<{
@@ -45,7 +46,7 @@ const placedAt = computed(() =>
 
 function updateStatus(): void {
     router.patch(
-        `/admin/orders/${props.order.id}/status`,
+        orderStatus.url(props.order.id),
         { status: status.value },
         { preserveScroll: true },
     );
@@ -56,7 +57,7 @@ function updateStatus(): void {
     <Head :title="order.order_number" />
     <AdminLayout :title="order.order_number">
         <Link
-            href="/admin/orders"
+            :href="adminOrders()"
             class="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
             <ArrowLeft class="size-4" /> Back to orders

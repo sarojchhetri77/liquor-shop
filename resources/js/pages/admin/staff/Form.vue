@@ -6,6 +6,7 @@ import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import AdminLayout from '@/layouts/AdminLayout.vue';
+import { index as adminStaff, store as storeStaff, update as updateStaff } from '@/routes/admin/staff';
 
 const props = defineProps<{
     staff?: {
@@ -47,9 +48,9 @@ async function copyPassword(): Promise<void> {
 
 function submit(): void {
     if (isEdit.value) {
-        form.put(`/admin/staff/${props.staff!.id}`);
+        form.put(updateStaff.url(props.staff!.id));
     } else {
-        form.post('/admin/staff');
+        form.post(storeStaff.url());
     }
 }
 </script>
@@ -58,7 +59,7 @@ function submit(): void {
     <Head :title="isEdit ? 'Edit staff' : 'Add staff'" />
     <AdminLayout :title="isEdit ? 'Edit staff' : 'Add staff'">
         <Link
-            href="/admin/staff"
+            :href="adminStaff()"
             class="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
         >
             <ArrowLeft class="size-4" /> Back to staff
@@ -175,7 +176,7 @@ function submit(): void {
                     isEdit ? 'Save changes' : 'Add staff'
                 }}</Button>
                 <Button as-child variant="ghost"
-                    ><Link href="/admin/staff">Cancel</Link></Button
+                    ><Link :href="adminStaff()">Cancel</Link></Button
                 >
             </div>
         </form>

@@ -1,9 +1,13 @@
+<script setup lang="ts">
+import { asset } from '@/lib/asset';
+</script>
+
 <template>
     <div
         class="flex aspect-square size-8 items-center justify-center overflow-hidden rounded-md bg-white"
     >
         <img
-            src="/pb_store_logo.jpeg"
+            :src="asset('pb_store_logo.jpeg')"
             alt="PB Store"
             class="size-full object-contain"
         />

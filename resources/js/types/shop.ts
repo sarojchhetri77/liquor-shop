@@ -14,6 +14,12 @@ export type Category = {
     products_count?: number;
 };
 
+export type Brand = {
+    id: number;
+    name: string;
+    slug?: string;
+};
+
 export type Review = {
     id: number;
     rating: number;
@@ -25,10 +31,11 @@ export type Review = {
 export type Product = {
     id: number;
     category_id: number;
+    brand_id: number | null;
     name: string;
     slug: string;
     description: string | null;
-    brand: string | null;
+    brand?: Brand | null;
     price: string;
     final_price: number;
     discount_percent: number;

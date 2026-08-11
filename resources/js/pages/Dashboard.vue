@@ -18,6 +18,10 @@ import { Button } from '@/components/ui/button';
 import { formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
+import { edit as profileRoute } from '@/routes/profile';
+import { edit as security } from '@/routes/security';
+import { index as orders, show as orderShow } from '@/routes/shop/orders';
+import { index as products } from '@/routes/shop/products';
 import type { Order } from '@/types/shop';
 
 defineOptions({
@@ -104,7 +108,7 @@ function formatDate(value: string | null): string {
                 <div class="mb-3 flex items-center justify-between">
                     <h2 class="font-display text-lg font-semibold">Recent orders</h2>
                     <Link
-                        href="/orders"
+                        :href="orders()"
                         class="flex items-center gap-1 text-sm font-medium text-primary hover:underline"
                     >
                         View all <ChevronRight class="size-4" />
@@ -115,7 +119,7 @@ function formatDate(value: string | null): string {
                     <Link
                         v-for="order in recentOrders"
                         :key="order.id"
-                        :href="`/orders/${order.id}`"
+                        :href="orderShow(order.id)"
                         class="flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-card p-4 transition-colors hover:bg-muted/40"
                     >
                         <div>
@@ -143,7 +147,7 @@ function formatDate(value: string | null): string {
                     <Package class="size-10 text-muted-foreground/50" />
                     <p class="font-medium">No orders yet</p>
                     <Button as-child>
-                        <Link href="/products">Start shopping</Link>
+                        <Link :href="products()">Start shopping</Link>
                     </Button>
                 </div>
             </section>
@@ -154,7 +158,7 @@ function formatDate(value: string | null): string {
                     <div class="mb-4 flex items-center justify-between">
                         <h2 class="font-display text-lg font-semibold">Details</h2>
                         <Link
-                            href="/settings/profile"
+                            :href="profileRoute()"
                             class="flex items-center gap-1 text-sm font-medium text-primary hover:underline"
                         >
                             <Pencil class="size-3.5" /> Edit
@@ -188,12 +192,12 @@ function formatDate(value: string | null): string {
                     <h2 class="mb-4 font-display text-lg font-semibold">Quick actions</h2>
                     <div class="grid gap-2">
                         <Button variant="outline" class="justify-start" as-child>
-                            <Link href="/settings/profile">
+                            <Link :href="profileRoute()">
                                 <UserIcon class="size-4" /> Edit profile
                             </Link>
                         </Button>
                         <Button variant="outline" class="justify-start" as-child>
-                            <Link href="/settings/security">
+                            <Link :href="security()">
                                 <KeyRound class="size-4" /> Change password
                             </Link>
                         </Button>

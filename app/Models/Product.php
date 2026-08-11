@@ -16,10 +16,10 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property int $category_id
+ * @property int|null $brand_id
  * @property string $name
  * @property string $slug
  * @property string|null $description
- * @property string|null $brand
  * @property string $price
  * @property int $discount_percent
  * @property Carbon|null $discount_starts_at
@@ -31,12 +31,13 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Category $category
+ * @property-read Brand|null $brand
  * @property-read Collection<int, ProductImage> $images
  * @property-read bool $is_discount_active
  * @property-read int $effective_discount_percent
  * @property-read float $final_price
  */
-#[Fillable(['category_id', 'name', 'slug', 'description', 'brand', 'price', 'discount_percent', 'discount_starts_at', 'discount_ends_at', 'stock', 'is_active'])]
+#[Fillable(['category_id', 'brand_id', 'name', 'slug', 'description', 'price', 'discount_percent', 'discount_starts_at', 'discount_ends_at', 'stock', 'is_active'])]
 class Product extends Model
 {
     /** @use HasFactory<ProductFactory> */
@@ -120,6 +121,14 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * @return BelongsTo<Brand, $this>
+     */
+    public function brand(): BelongsTo
+    {
+        return $this->belongsTo(Brand::class);
     }
 
     /**

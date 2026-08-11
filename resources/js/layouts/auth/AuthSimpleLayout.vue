@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
+import { asset } from '@/lib/asset';
 import { home } from '@/routes';
 
 defineProps<{
@@ -18,7 +19,7 @@ defineProps<{
                 <span
                     class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md bg-white"
                 >
-                    <img src="/pb_store_logo.jpeg" alt="PB Store" class="size-full object-contain" />
+                    <img :src="asset('pb_store_logo.jpeg')" alt="PB Store" class="size-full object-contain" />
                 </span>
                 <span class="font-display text-2xl font-semibold tracking-tight">
                     PB Store
@@ -52,7 +53,7 @@ defineProps<{
                     <span
                         class="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-md bg-white"
                     >
-                        <img src="/pb_store_logo.jpeg" alt="PB Store" class="size-full object-contain" />
+                        <img :src="asset('pb_store_logo.jpeg')" alt="PB Store" class="size-full object-contain" />
                     </span>
                     <span class="font-display text-xl font-semibold">PB Store</span>
                 </Link>

@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import AdminLayout from '@/layouts/AdminLayout.vue';
+import { destroy as destroyStaff, edit as editStaff, store as storeStaff } from '@/routes/admin/staff';
 import type { User } from '@/types/auth';
 import type { Paginated } from '@/types/shop';
 
@@ -49,7 +50,7 @@ function applyFilters(): void {
 }
 
 function submit(): void {
-    form.post('/admin/staff', {
+    form.post(storeStaff.url(), {
         preserveScroll: true,
         onSuccess: () => {
             form.reset();
@@ -66,7 +67,7 @@ function openCreate(): void {
 
 function destroy(member: User): void {
     if (confirm(`Remove ${member.name}?`)) {
-        router.delete(`/admin/staff/${member.id}`, { preserveScroll: true });
+        router.delete(destroyStaff.url(member.id), { preserveScroll: true });
     }
 }
 </script>
@@ -122,7 +123,7 @@ function destroy(member: User): void {
                             <td class="px-5 py-3.5">
                                 <div class="flex items-center justify-end gap-1">
                                     <Button as-child size="icon" variant="ghost">
-                                        <Link :href="`/admin/staff/${member.id}/edit`"><Pencil class="size-4" /></Link>
+                                        <Link :href="editStaff(member.id)"><Pencil class="size-4" /></Link>
                                     </Button>
                                     <Button size="icon" variant="ghost" class="text-red-600 hover:text-red-600" @click="destroy(member)">
                                         <Trash2 class="size-4" />

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
+import { cancel as cancelOrderRoute, index as orders } from '@/routes/shop/orders';
 import type { Order } from '@/types/shop';
 
 const props = defineProps<{
@@ -55,7 +56,7 @@ const countdown = computed(() => {
 
 function cancelOrder(): void {
     if (confirm('Cancel this order? The items will be returned to stock.')) {
-        router.post(`/orders/${props.order.id}/cancel`, {}, { preserveScroll: true });
+        router.post(cancelOrderRoute.url(props.order.id), {}, { preserveScroll: true });
     }
 }
 </script>
@@ -65,7 +66,7 @@ function cancelOrder(): void {
     <AppLayout>
         <div class="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6">
             <Link
-                href="/orders"
+                :href="orders()"
                 class="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
             >
                 <ArrowLeft class="size-4" /> Back to orders

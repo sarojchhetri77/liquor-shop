@@ -1,13 +1,22 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
 import { Pencil, Plus, Search, Tag, Trash2 } from '@lucide/vue';
-import { reactive, ref } from 'vue';
+import { onBeforeUnmount, reactive, ref, watch } from 'vue';
 import BottleThumb from '@/components/shop/BottleThumb.vue';
 import Pagination from '@/components/shop/Pagination.vue';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import { formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
+import {
+    create as createProduct,
+    destroy as destroyProduct,
+    discount as productDiscount,
+    edit as editProduct,
+    index as adminProducts,
+    show as productShow,
+} from '@/routes/admin/products';
 import type { Paginated, Product } from '@/types/shop';
 
 const props = defineProps<{
@@ -29,16 +38,47 @@ const discountEndsAt = ref<string>('');
 const controlClass =
     'h-11 rounded-lg border bg-card px-3.5 text-sm outline-none transition-colors focus:border-primary';
 
+/** How long typing has to pause before the table reloads. */
+const SEARCH_DEBOUNCE_MS = 300;
+
+const isFiltering = ref(false);
+let searchTimer: ReturnType<typeof setTimeout> | undefined;
+
 function applyFilters(): void {
+    clearTimeout(searchTimer);
+
     router.get(
-        '/admin/products',
+        adminProducts.url(),
         {
             search: filters.search || undefined,
             category_id: filters.category_id || undefined,
         },
-        { preserveState: true, replace: true },
+        {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+            // Only the table and the echoed filters need to come back.
+            only: ['products', 'filters'],
+            onStart: () => {
+                isFiltering.value = true;
+            },
+            onFinish: () => {
+                isFiltering.value = false;
+            },
+        },
     );
 }
+
+// Filter the table as the admin types, rather than waiting for Enter.
+watch(
+    () => filters.search,
+    () => {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(applyFilters, SEARCH_DEBOUNCE_MS);
+    },
+);
+
+onBeforeUnmount(() => clearTimeout(searchTimer));
 
 function toggle(id: number): void {
     const index = selected.value.indexOf(id);
@@ -56,7 +96,7 @@ function applyDiscount(): void {
     }
 
     router.post(
-        '/admin/products/discount',
+        productDiscount.url(),
         {
             product_ids: selected.value,
             discount_percent: discountValue.value,
@@ -77,7 +117,7 @@ function applyDiscount(): void {
 
 function destroy(product: Product): void {
     if (confirm(`Delete "${product.name}"? This cannot be undone.`)) {
-        router.delete(`/admin/products/${product.id}`, { preserveScroll: true });
+        router.delete(destroyProduct.url(product.id), { preserveScroll: true });
     }
 }
 </script>
@@ -94,18 +134,20 @@ function destroy(product: Product): void {
                         v-model="filters.search"
                         type="search"
                         placeholder="Search by name…"
-                        :class="cn(controlClass, 'w-full pr-3 pl-9')"
-                        @keyup.enter="applyFilters"
+                        :class="cn(controlClass, 'w-full pr-9 pl-9')"
+                    />
+                    <Spinner
+                        v-if="isFiltering"
+                        class="absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground"
                     />
                 </div>
                 <select v-model="filters.category_id" :class="controlClass" @change="applyFilters">
                     <option value="">All categories</option>
                     <option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option>
                 </select>
-                <Button variant="secondary" class="h-11" @click="applyFilters">Filter</Button>
             </div>
             <Button as-child class="h-11">
-                <Link href="/admin/products/create" class="gap-1.5"><Plus class="size-4" /> New product</Link>
+                <Link :href="createProduct()" class="gap-1.5"><Plus class="size-4" /> New product</Link>
             </Button>
         </div>
 
@@ -192,12 +234,12 @@ function destroy(product: Product): void {
                                     </div>
                                     <div class="min-w-0">
                                         <Link
-                                            :href="`/admin/products/${product.id}`"
+                                            :href="productShow(product.id)"
                                             class="block truncate font-medium transition-colors hover:text-primary"
                                         >
                                             {{ product.name }}
                                         </Link>
-                                        <p class="truncate text-xs text-muted-foreground">{{ product.brand }}</p>
+                                        <p class="truncate text-xs text-muted-foreground">{{ product.brand?.name }}</p>
                                     </div>
                                 </div>
                             </td>
@@ -238,7 +280,7 @@ function destroy(product: Product): void {
                             <td class="px-5 py-3.5">
                                 <div class="flex items-center justify-end gap-1">
                                     <Button as-child size="icon" variant="ghost">
-                                        <Link :href="`/admin/products/${product.id}/edit`"><Pencil class="size-4" /></Link>
+                                        <Link :href="editProduct(product.id)"><Pencil class="size-4" /></Link>
                                     </Button>
                                     <Button size="icon" variant="ghost" class="text-red-600 hover:text-red-600" @click="destroy(product)">
                                         <Trash2 class="size-4" />

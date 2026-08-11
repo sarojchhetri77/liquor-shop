@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import AdminLayout from '@/layouts/AdminLayout.vue';
+import { destroy as destroyCategory } from '@/routes/admin/categories';
 import type { Category, Paginated } from '@/types/shop';
 
 const props = defineProps<{
@@ -91,7 +92,7 @@ function submit(): void {
 
 function destroy(category: Category): void {
     if (confirm(`Delete "${category.name}"? Products in it will be removed too.`)) {
-        router.delete(`/admin/categories/${category.id}`, { preserveScroll: true });
+        router.delete(destroyCategory.url(category.id), { preserveScroll: true });
     }
 }
 </script>

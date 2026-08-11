@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
+import { show as orderShow } from '@/routes/shop/orders';
+import { index as products } from '@/routes/shop/products';
 import type { Order, Paginated } from '@/types/shop';
 
 defineProps<{
@@ -32,7 +34,7 @@ const statusTone: Record<string, string> = {
                 <Link
                     v-for="order in orders.data"
                     :key="order.id"
-                    :href="`/orders/${order.id}`"
+                    :href="orderShow(order.id)"
                     class="flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-card p-4 transition-colors hover:bg-muted/40"
                 >
                     <div>
@@ -69,7 +71,7 @@ const statusTone: Record<string, string> = {
                 <Package class="size-12 text-muted-foreground/50" />
                 <p class="font-medium">No orders yet</p>
                 <Button as-child
-                    ><Link href="/products">Start shopping</Link></Button
+                    ><Link :href="products()">Start shopping</Link></Button
                 >
             </div>
         </div>

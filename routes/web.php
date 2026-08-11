@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BrandController as AdminBrandController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
@@ -22,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products', [ShopProductController::class, 'index'])->name('shop.products.index');
+Route::get('/search/suggestions', [ShopProductController::class, 'suggestions'])->name('shop.search.suggestions');
 Route::get('/products/{product:slug}', [ShopProductController::class, 'show'])->name('shop.products.show');
 
 // Post-login landing: staff/admins go to the panel, customers to their account dashboard.
@@ -62,6 +64,8 @@ Route::middleware(['auth', 'verified', 'role:admin,staff'])
         Route::get('categories/{category}/edit', [AdminCategoryController::class, 'edit'])->name('categories.edit');
         Route::put('categories/{category}', [AdminCategoryController::class, 'update'])->name('categories.update');
         Route::delete('categories/{category}', [AdminCategoryController::class, 'destroy'])->name('categories.destroy');
+
+        Route::post('brands', [AdminBrandController::class, 'store'])->name('brands.store');
 
         Route::post('products/discount', [AdminProductController::class, 'applyDiscount'])->name('products.discount');
         Route::get('products', [AdminProductController::class, 'index'])->name('products.index');

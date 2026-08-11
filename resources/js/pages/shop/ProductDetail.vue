@@ -8,6 +8,10 @@ import StarRating from '@/components/shop/StarRating.vue';
 import { Button } from '@/components/ui/button';
 import ShopLayout from '@/layouts/ShopLayout.vue';
 import { formatMoney } from '@/lib/format';
+import { login } from '@/routes';
+import { store as addToCartRoute } from '@/routes/shop/cart';
+import { index as products } from '@/routes/shop/products';
+import { store as storeReview } from '@/routes/shop/reviews';
 import type { Product, Review } from '@/types/shop';
 
 const props = defineProps<{
@@ -27,13 +31,13 @@ const hasDiscount = computed(() => props.product.discount_percent > 0);
 
 function addToCart(): void {
     if (!isAuthenticated.value) {
-        router.visit('/login');
+        router.visit(login.url());
 
         return;
     }
 
     router.post(
-        `/cart/${props.product.id}`,
+        addToCartRoute.url(props.product.id),
         { quantity: quantity.value },
         { preserveScroll: true },
     );
@@ -45,7 +49,7 @@ const reviewForm = useForm({
 });
 
 function submitReview(): void {
-    reviewForm.post(`/products/${props.product.id}/reviews`, {
+    reviewForm.post(storeReview.url(props.product.id), {
         preserveScroll: true,
     });
 }
@@ -58,10 +62,10 @@ function submitReview(): void {
             <nav
                 class="mb-6 flex items-center gap-2 text-sm text-muted-foreground"
             >
-                <Link href="/products" class="hover:text-foreground">Shop</Link>
+                <Link :href="products()" class="hover:text-foreground">Shop</Link>
                 <span>/</span>
                 <Link
-                    :href="`/products?category_id=${product.category_id}`"
+                    :href="products({ query: { category_id: product.category_id } })"
                     class="hover:text-foreground"
                     >{{ product.category?.name }}</Link
                 >
@@ -109,7 +113,7 @@ function submitReview(): void {
                             v-if="product.brand"
                             class="text-xs font-semibold tracking-[0.16em] text-primary/70 uppercase"
                         >
-                            {{ product.brand }}
+                            {{ product.brand.name }}
                         </p>
                         <h1 class="mt-2 font-display text-4xl leading-tight font-semibold">
                             {{ product.name }}
@@ -312,7 +316,7 @@ function submitReview(): void {
                         class="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground"
                     >
                         <Link
-                            href="/login"
+                            :href="login()"
                             class="font-medium text-primary hover:underline"
                             >Log in</Link
                         >

@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import { formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
+import { destroy as destroyProduct, edit as editProduct, index as adminProducts } from '@/routes/admin/products';
+import { show as productShow } from '@/routes/shop/products';
 import type { Product } from '@/types/shop';
 
 const props = defineProps<{
@@ -43,7 +45,7 @@ const discountStatus = computed<{ label: string; classes: string } | null>(() =>
 
 function destroy(): void {
     if (confirm(`Delete "${props.product.name}"? This cannot be undone.`)) {
-        router.delete(`/admin/products/${props.product.id}`);
+        router.delete(destroyProduct.url(props.product.id));
     }
 }
 </script>
@@ -54,17 +56,17 @@ function destroy(): void {
         <!-- Header -->
         <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
             <Link
-                href="/admin/products"
+                :href="adminProducts()"
                 class="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
                 <ArrowLeft class="size-4" /> Back to products
             </Link>
             <div class="flex items-center gap-2">
                 <Button as-child variant="outline">
-                    <Link :href="`/products/${product.slug}`" class="gap-1.5"><ExternalLink class="size-4" /> View in store</Link>
+                    <Link :href="productShow(product.slug)" class="gap-1.5"><ExternalLink class="size-4" /> View in store</Link>
                 </Button>
                 <Button as-child>
-                    <Link :href="`/admin/products/${product.id}/edit`" class="gap-1.5"><Pencil class="size-4" /> Edit</Link>
+                    <Link :href="editProduct(product.id)" class="gap-1.5"><Pencil class="size-4" /> Edit</Link>
                 </Button>
                 <Button variant="ghost" size="icon" class="text-red-600 hover:text-red-600" @click="destroy">
                     <Trash2 class="size-4" />
@@ -99,7 +101,7 @@ function destroy(): void {
                 <div class="rounded-2xl border bg-card p-6 shadow-sm">
                     <div class="flex items-start justify-between gap-3">
                         <div>
-                            <p v-if="product.brand" class="text-xs font-semibold tracking-[0.14em] text-primary/70 uppercase">{{ product.brand }}</p>
+                            <p v-if="product.brand" class="text-xs font-semibold tracking-[0.14em] text-primary/70 uppercase">{{ product.brand.name }}</p>
                             <h1 class="mt-1 font-display text-2xl font-semibold">{{ product.name }}</h1>
                         </div>
                         <span

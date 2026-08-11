@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -26,7 +27,7 @@ class ProductFactory extends Factory
             'name' => Str::title($name),
             'slug' => Str::slug($name).'-'.fake()->unique()->randomNumber(5),
             'description' => fake()->paragraphs(2, true),
-            'brand' => fake()->company(),
+            'brand_id' => Brand::factory(),
             'price' => fake()->randomFloat(2, 5, 2000),
             'discount_percent' => fake()->randomElement([0, 0, 0, 10, 15, 20, 30]),
             'rating' => 0,
