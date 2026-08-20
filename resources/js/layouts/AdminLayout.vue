@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Link, router, usePage } from '@inertiajs/vue3';
 import {
+    Bookmark,
     LayoutDashboard,
     LogOut,
     Megaphone,
@@ -29,6 +30,7 @@ import { asset } from '@/lib/asset';
 import { cn } from '@/lib/utils';
 import { home, logout as logoutRoute } from '@/routes';
 import { dashboard as adminDashboard } from '@/routes/admin';
+import { index as adminBrands } from '@/routes/admin/brands';
 import { index as adminCategories } from '@/routes/admin/categories';
 import { index as adminOrders } from '@/routes/admin/orders';
 import { index as adminProducts } from '@/routes/admin/products';
@@ -58,6 +60,7 @@ const navItems: AdminNavItem[] = [
     { label: 'Dashboard', href: adminDashboard.url(), icon: LayoutDashboard },
     { label: 'Products', href: adminProducts.url(), icon: Package },
     { label: 'Categories', href: adminCategories.url(), icon: Tags },
+    { label: 'Brands', href: adminBrands.url(), icon: Bookmark },
     { label: 'Orders', href: adminOrders.url(), icon: ShoppingBag },
     { label: 'Promotions', href: adminPromotions.url(), icon: Megaphone },
     { label: 'Staff', href: adminStaff.url(), icon: Users, adminOnly: true },

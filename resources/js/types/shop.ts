@@ -19,6 +19,7 @@ export type Brand = {
     id: number;
     name: string;
     slug?: string;
+    products_count?: number;
 };
 
 export type Review = {

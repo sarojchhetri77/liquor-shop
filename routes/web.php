@@ -65,7 +65,10 @@ Route::middleware(['auth', 'verified', 'role:admin,staff'])
         Route::put('categories/{category}', [AdminCategoryController::class, 'update'])->name('categories.update');
         Route::delete('categories/{category}', [AdminCategoryController::class, 'destroy'])->name('categories.destroy');
 
+        Route::get('brands', [AdminBrandController::class, 'index'])->name('brands.index');
         Route::post('brands', [AdminBrandController::class, 'store'])->name('brands.store');
+        Route::put('brands/{brand}', [AdminBrandController::class, 'update'])->name('brands.update');
+        Route::delete('brands/{brand}', [AdminBrandController::class, 'destroy'])->name('brands.destroy');
 
         Route::post('products/discount', [AdminProductController::class, 'applyDiscount'])->name('products.discount');
         Route::get('products', [AdminProductController::class, 'index'])->name('products.index');
