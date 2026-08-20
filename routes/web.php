@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\PromotionController as AdminPromotionController;
 use App\Http\Controllers\Admin\StaffController as AdminStaffController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Shop\CartController;
 use App\Http\Controllers\Shop\CheckoutController;
 use App\Http\Controllers\Shop\DashboardController as ShopDashboardController;
@@ -92,8 +93,13 @@ Route::middleware(['auth', 'verified', 'role:admin,staff'])
         Route::post('promotions/{promotion}', [AdminPromotionController::class, 'update'])->name('promotions.update');
         Route::delete('promotions/{promotion}', [AdminPromotionController::class, 'destroy'])->name('promotions.destroy');
 
-        // Staff management is restricted to administrators only.
+        // Staff and user management are restricted to administrators only.
         Route::middleware('role:admin')->group(function () {
+            Route::get('users', [AdminUserController::class, 'index'])->name('users.index');
+            Route::post('users', [AdminUserController::class, 'store'])->name('users.store');
+            Route::put('users/{user}', [AdminUserController::class, 'update'])->name('users.update');
+            Route::delete('users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+
             Route::get('staff', [AdminStaffController::class, 'index'])->name('staff.index');
             Route::get('staff/create', [AdminStaffController::class, 'create'])->name('staff.create');
             Route::post('staff', [AdminStaffController::class, 'store'])->name('staff.store');

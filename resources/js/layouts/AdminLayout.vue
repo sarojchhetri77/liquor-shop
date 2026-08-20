@@ -11,6 +11,7 @@ import {
     Store,
     Tags,
     User as UserIcon,
+    UserCog,
     Users,
 } from '@lucide/vue';
 import type { LucideIcon } from '@lucide/vue';
@@ -36,6 +37,7 @@ import { index as adminOrders } from '@/routes/admin/orders';
 import { index as adminProducts } from '@/routes/admin/products';
 import { index as adminPromotions } from '@/routes/admin/promotions';
 import { index as adminStaff } from '@/routes/admin/staff';
+import { index as adminUsers } from '@/routes/admin/users';
 import { edit as profile } from '@/routes/profile';
 
 withDefaults(
@@ -63,7 +65,8 @@ const navItems: AdminNavItem[] = [
     { label: 'Brands', href: adminBrands.url(), icon: Bookmark },
     { label: 'Orders', href: adminOrders.url(), icon: ShoppingBag },
     { label: 'Promotions', href: adminPromotions.url(), icon: Megaphone },
-    { label: 'Staff', href: adminStaff.url(), icon: Users, adminOnly: true },
+    { label: 'Users', href: adminUsers.url(), icon: Users, adminOnly: true },
+    { label: 'Staff', href: adminStaff.url(), icon: UserCog, adminOnly: true },
 ];
 
 const visibleItems = computed(() =>

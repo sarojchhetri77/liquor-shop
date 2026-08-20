@@ -7,28 +7,31 @@ use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Hash;
 
-class StaffService
+class UserService
 {
     /**
-     * Paginate staff and administrator accounts for the admin panel.
+     * Paginate every account for the admin panel, optionally narrowed by a
+     * name/email search and by role.
      *
      * @return LengthAwarePaginator<int, User>
      */
-    public function paginate(?string $search = null, int $perPage = 12): LengthAwarePaginator
+    public function paginate(?string $search = null, ?string $role = null, int $perPage = 12): LengthAwarePaginator
     {
         return User::query()
-            ->whereIn('role', [UserRole::Admin->value, UserRole::Staff->value])
+            ->withCount('orders')
             ->when($search, fn ($query) => $query
                 ->where(fn ($q) => $q
                     ->where('name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")))
+            ->when($role, fn ($query) => $query->where('role', $role))
             ->latest()
             ->paginate($perPage)
             ->withQueryString();
     }
 
     /**
-     * Create a new staff (or admin) account.
+     * Create an account from the admin panel. Accounts made here are treated
+     * as verified, since an administrator vouched for the address.
      *
      * @param  array{name: string, email: string, password: string, role?: string|null, contact?: string|null}  $data
      */
@@ -38,7 +41,7 @@ class StaffService
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'role' => $data['role'] ?? UserRole::Staff->value,
+            'role' => $data['role'] ?? UserRole::Customer->value,
             'contact' => $data['contact'] ?? null,
         ]);
 
@@ -52,24 +55,25 @@ class StaffService
     /**
      * @param  array{name: string, email: string, role?: string|null, contact?: string|null, password?: string|null}  $data
      */
-    public function update(User $staff, array $data): User
+    public function update(User $user, array $data): User
     {
-        $staff->name = $data['name'];
-        $staff->email = $data['email'];
-        $staff->role = $data['role'] ?? $staff->role->value;
-        $staff->contact = $data['contact'] ?? null;
+        $user->name = $data['name'];
+        $user->email = $data['email'];
+        $user->role = $data['role'] ?? $user->role->value;
+        $user->contact = $data['contact'] ?? null;
 
+        // An empty password field means "leave the current one alone".
         if (! empty($data['password'])) {
-            $staff->password = Hash::make($data['password']);
+            $user->password = Hash::make($data['password']);
         }
 
-        $staff->save();
+        $user->save();
 
-        return $staff;
+        return $user;
     }
 
-    public function delete(User $staff): void
+    public function delete(User $user): void
     {
-        $staff->delete();
+        $user->delete();
     }
 }
