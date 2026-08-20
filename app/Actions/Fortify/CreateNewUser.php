@@ -22,8 +22,10 @@ class CreateNewUser implements CreatesNewUsers
     {
         Validator::make($input, [
             ...$this->profileRules(),
-            'contact' => ['required', 'string', 'max:30'],
-            'dob' => ['required', 'date', 'before:today'],
+            // Digits only, with an optional leading "+" for a country code.
+            'contact' => ['required', 'string', 'regex:/^\+?[0-9]{7,15}$/'],
+            // Customers must be at least 18 years old to register.
+            'dob' => ['required', 'date', 'before_or_equal:'.now()->subYears(18)->toDateString()],
             'password' => $this->passwordRules(),
         ])->validate();
 

@@ -20,6 +20,26 @@ defineOptions({
         description: 'Enter your details below to create your account',
     },
 });
+
+/** Customers must be at least 18 years old, so the picker can't go past this date. */
+const maxDob = (() => {
+    const date = new Date();
+    date.setFullYear(date.getFullYear() - 18);
+
+    return date.toISOString().slice(0, 10);
+})();
+
+/** Strip anything but digits (and a leading "+" for a country code) as the user types. */
+function sanitizeContactInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const hasLeadingPlus = input.value.startsWith('+');
+    const digits = input.value.replace(/[^0-9]/g, '');
+    const cleaned = hasLeadingPlus ? `+${digits}` : digits;
+
+    if (input.value !== cleaned) {
+        input.value = cleaned;
+    }
+}
 </script>
 
 <template>
@@ -64,10 +84,15 @@ defineOptions({
                     <Label for="contact">Contact number <span class="text-red-500">*</span></Label>
                     <Input
                         id="contact"
-                        type="text"
+                        type="tel"
+                        inputmode="tel"
+                        pattern="\+?[0-9]*"
+                        maxlength="16"
+                        placeholder="98XXXXXXXX"
                         :tabindex="3"
                         autocomplete="tel"
                         name="contact"
+                        @input="sanitizeContactInput"
                     />
                     <InputError :message="errors.contact" />
                 </div>
@@ -77,6 +102,7 @@ defineOptions({
                     <Input
                         id="dob"
                         type="date"
+                        :max="maxDob"
                         :tabindex="4"
                         name="dob"
                     />
