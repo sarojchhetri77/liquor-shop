@@ -96,7 +96,7 @@ function categoryIcon(name: string): LucideIcon {
                     </span>
                     <span class="hidden sm:inline">200+ curated labels</span>
                     <span class="flex items-center gap-2">
-                        <Truck class="size-4 text-gold" /> Free delivery over Rs. 5,000
+                        <Truck class="size-4 text-gold" /> Free delivery based on your location
                     </span>
                     <span class="font-semibold tracking-wide text-gold uppercase">21+ · Drink responsibly</span>
                 </div>
@@ -153,7 +153,7 @@ function categoryIcon(name: string): LucideIcon {
                 class="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-6 px-4 py-14 text-center sm:px-6 md:flex-row md:text-left"
             >
                 <div class="max-w-xl space-y-2">
-                    <p class="text-xs font-semibold uppercase tracking-[0.24em] text-gold">Cash or card on delivery</p>
+                    <p class="text-xs font-semibold uppercase tracking-[0.24em] text-gold">Cash on delivery</p>
                     <h2 class="font-display text-3xl font-semibold sm:text-4xl">
                         Free, discreet delivery across the valley.
                     </h2>

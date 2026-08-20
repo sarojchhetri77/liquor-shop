@@ -77,7 +77,7 @@ const socials = [
                     </span>
                 </div>
                 <span class="flex items-center gap-1.5">
-                    <Truck class="size-3.5 text-gold" /> Cash or card on delivery
+                    <Truck class="size-3.5 text-gold" /> Cash on delivery
                 </span>
             </div>
         </div>
@@ -94,13 +94,8 @@ const socials = [
                     >
                         <img :src="asset('pb_store_logo.jpeg')" alt="PB Store" class="size-full object-contain" />
                     </span>
-                    <span class="hidden flex-col leading-none sm:flex">
-                        <span class="font-display text-2xl font-semibold tracking-tight">
-                            PB Store<span class="text-gold">.</span>
-                        </span>
-                        <span class="text-[9px] font-medium uppercase tracking-[0.3em] text-muted-foreground">
-                            Fine Wine &amp; Spirits
-                        </span>
+                    <span class="hidden font-display text-2xl leading-none font-semibold tracking-tight sm:block">
+                        PB Store<span class="text-gold">.</span>
                     </span>
                 </Link>
 
@@ -298,9 +293,9 @@ const socials = [
                         <h3 class="text-sm font-semibold tracking-wide uppercase">Delivery &amp; payment</h3>
                         <ul class="space-y-2 text-sm text-muted-foreground">
                             <li class="flex items-center gap-2">
-                                <Truck class="size-4 text-primary" /> Cash or card on delivery
+                                <Truck class="size-4 text-primary" /> Cash on delivery
                             </li>
-                            <li>Free delivery over Rs. 5,000</li>
+                            <li>Free delivery based on your location</li>
                             <li>Same-day dispatch before 8 PM</li>
                         </ul>
                         <div>
