@@ -14,7 +14,7 @@ const props = defineProps<{
 }>();
 
 const isEdit = computed(() => !!props.category);
-const preview = ref<string | null>(props.category?.image ?? null);
+const preview = ref<string | null>(props.category?.image_url ?? null);
 
 const form = useForm({
     _method: isEdit.value ? 'put' : 'post',
@@ -31,7 +31,7 @@ function onFile(event: Event): void {
     form.image = file;
     preview.value = file
         ? URL.createObjectURL(file)
-        : (props.category?.image ?? null);
+        : (props.category?.image_url ?? null);
 }
 
 function submit(): void {

@@ -11,6 +11,7 @@ export type Category = {
     slug: string;
     description?: string | null;
     image?: string | null;
+    image_url?: string | null;
     products_count?: number;
 };
 

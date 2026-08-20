@@ -60,7 +60,7 @@ function openCreate(): void {
 
 function openEdit(category: Category): void {
     editing.value = category;
-    preview.value = category.image ?? null;
+    preview.value = category.image_url ?? null;
     form.reset();
     form.clearErrors();
     form._method = 'put';
@@ -72,7 +72,7 @@ function openEdit(category: Category): void {
 function onFile(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0] ?? null;
     form.image = file;
-    preview.value = file ? URL.createObjectURL(file) : (editing.value?.image ?? null);
+    preview.value = file ? URL.createObjectURL(file) : (editing.value?.image_url ?? null);
 }
 
 function submit(): void {
@@ -133,8 +133,8 @@ function destroy(category: Category): void {
                                 <div class="flex items-center gap-3">
                                     <div class="size-11 shrink-0 overflow-hidden rounded-lg border bg-secondary/40">
                                         <img
-                                            v-if="category.image"
-                                            :src="category.image"
+                                            v-if="category.image_url"
+                                            :src="category.image_url"
                                             :alt="category.name"
                                             class="h-full w-full object-cover"
                                         />
