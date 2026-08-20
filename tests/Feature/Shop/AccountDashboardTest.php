@@ -31,7 +31,6 @@ test('the account dashboard shows the customer profile, stats and recent orders'
             ->where('profile.email', $user->email)
             ->where('stats.orders', 4)
             ->where('stats.pending', 1)
-            ->where('stats.spent', 250) // excludes the cancelled order
             ->has('recentOrders', 4));
 });
 

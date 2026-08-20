@@ -11,7 +11,6 @@ import {
     Phone,
     ShoppingBag,
     User as UserIcon,
-    Wallet,
 } from '@lucide/vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -40,7 +39,6 @@ const props = defineProps<{
     };
     stats: {
         orders: number;
-        spent: number;
         pending: number;
     };
     recentOrders: Order[];
@@ -58,7 +56,6 @@ const statusTone: Record<string, string> = {
 
 const statCards = [
     { key: 'orders', label: 'Total orders', icon: Package, value: () => String(props.stats.orders) },
-    { key: 'spent', label: 'Total spent', icon: Wallet, value: () => formatMoney(props.stats.spent) },
     { key: 'pending', label: 'Pending', icon: Clock, value: () => String(props.stats.pending) },
 ];
 
@@ -82,7 +79,7 @@ function formatDate(value: string | null): string {
         </div>
 
         <!-- Stats -->
-        <div class="mb-8 grid gap-4 sm:grid-cols-3">
+        <div class="mb-8 grid gap-4 sm:grid-cols-2">
             <div
                 v-for="stat in statCards"
                 :key="stat.key"

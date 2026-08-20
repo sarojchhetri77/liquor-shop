@@ -33,9 +33,6 @@ class DashboardController extends Controller
             ],
             'stats' => [
                 'orders' => $user->orders()->count(),
-                'spent' => (float) $user->orders()
-                    ->whereNot('status', OrderStatus::Cancelled->value)
-                    ->sum('total'),
                 'pending' => $user->orders()
                     ->where('status', OrderStatus::Pending->value)
                     ->count(),
