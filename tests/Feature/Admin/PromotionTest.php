@@ -33,8 +33,9 @@ test('the active promotion is shared to the homepage popup', function () {
     $this->get(route('home'))
         ->assertOk()
         ->assertInertia(fn ($page) => $page
-            ->where('promotion.title', 'Live promo')
-            ->where('promotion.is_active', true));
+            ->has('promotions', 1)
+            ->where('promotions.0.title', 'Live promo')
+            ->where('promotions.0.is_active', true));
 });
 
 test('no popup is shown when there is no active promotion', function () {
@@ -42,7 +43,7 @@ test('no popup is shown when there is no active promotion', function () {
 
     $this->get(route('home'))
         ->assertOk()
-        ->assertInertia(fn ($page) => $page->where('promotion', null));
+        ->assertInertia(fn ($page) => $page->has('promotions', 0));
 });
 
 test('customers cannot manage promotions', function () {

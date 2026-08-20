@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Promotion;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
@@ -21,15 +22,18 @@ class PromotionService
     }
 
     /**
-     * The active promotion to display in the storefront popup, if any.
+     * Every active promotion, in display order, for the storefront popup.
+     * The popup shows them as a slider when there is more than one.
+     *
+     * @return Collection<int, Promotion>
      */
-    public function activePopup(): ?Promotion
+    public function activePopups(): Collection
     {
         return Promotion::query()
             ->where('is_active', true)
             ->orderBy('sort_order')
             ->latest()
-            ->first();
+            ->get();
     }
 
     /**

@@ -16,7 +16,7 @@ class HomeController extends Controller
     public function index(): Response
     {
         return Inertia::render('shop/Home', [
-            'promotion' => $this->promotions->activePopup(),
+            'promotions' => $this->promotions->activePopups(),
             'featured' => Product::active()
                 ->with(['images', 'category', 'brand'])
                 ->orderByDesc('rating')
